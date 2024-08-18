@@ -1,0 +1,83 @@
+---
+title: 'Using a shared ‘_Layout.cshtml’ with Sitecore MVC'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'April 03 2014'
+tags: [Sitecore]
+---
+
+In standard ASP.NET MVC, we are accustomed to having a **shared MVC** layout (by default, the /Views/Shared/_Layout.cshtml file) that contains our page scaffolding -- like the document `<head>`. If we want a view to use this MVC layout, we set that view's Layout property to the appropriate path. For example:
+
+```razor
+@{
+      Layout = "~/Views/Shared/_Layout.cshtml";
+}
+```
+
+Within the actual layout file, there is a section called `@RenderBody()`. Here is an example of a shared MVC layout with the standard Bootstrap scaffolding:
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bootstrap 101 Template</title>
+    <!-- CSS and meta data here -->
+  <body>
+    @RenderBody()
+   <!-- JS here -->
+  </body>
+</html>
+```
+
+The view referencing the shared layout will be loaded into @RenderBody().
+
+In standard ASP.NET MVC, it makes sense to take advantage of this feature to reduce duplication. In Sitecore MVC, however, it isn't strictly necessary to have one. We still a define **Sitecore layout**, which is actually points to a standard **MVC view**. Within that Sitecore layout, we add our page scaffolding and define a main placeholder -- like this:
+
+```html
+<html>
+<!-- ... -->
+<div class="container">
+    @Html.Sitecore().Placeholder("main")
+</div>
+<!-- ... -->
+</html>
+```
+
+Within that placeholder, we can bind any number of nested **view or controller renderings** -- our Sitecore layout becomes the equivalent of an MVC layout, and our placeholder does a similar job to `@RenderBody`. However, you can still use a standard MVC layout on top of this. Here is an example of a Sitecore layout using an MVC layout:
+
+```razor
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+ 
+<div class="container">
+    @Html.Sitecore().Placeholder("main")
+</div>
+```
+
+Sitecore's layout view will be rendered out by `@RenderBody()` as expected, and your renderings will be bound to the placeholder within that view.
+
+## Is there ever a reason to use a shared MVC layout?
+
+Imagine that your website is responsive -- CSS changes the layout depending on the size of the view port. You decide to use this in conjunction with Sitecore devices; so you set up three devices -- Mobile, Tablet, and Desktop. Each content item uses exactly the same Sitecore layout, but the introduction of devices allows you to add or remove components depending on the device that content item is being viewed by -- for example, mobile phone users might not see the high-res banner image on the homepage.
+
+You then decide that you require slightly different Javascript to run for each device -- but you only have one layout, and that contains your .js references. How do you vary those .js references without having to create multiple Sitecore layouts, or creating some logic that switches which Javascript is used?
+
+One option is to create a shared MVC layout, and three separate Sitecore layouts -- but each Sitecore layout only contains the following code:
+
+```razor
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+ 
+@section Scripts {
+    <!-- your .js here, which may vary -->
+}
+```
+
+In addition to @RenderBody(), the MVC layout would now also call:
+
+```razor
+@RenderSection("Scripts")
+```
+
+Here we are taking advantage of **ASP.NET MVC sections**, which do still work between the main Sitecore layout view and a shared MVC layout (they will not work from within a view or controller rendering, however). By doing it this way, all shared page scaffolding is kept within the MVC layout, and the only function of the Sitecore layout is to vary particular sections.

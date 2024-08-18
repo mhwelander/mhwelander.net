@@ -11,7 +11,6 @@
 	--accent: 210, 211, 218;
 	--accent-dark: #000d8a;
 	--black: 15, 18, 25;
-	--gray-mid: 210, 211, 218;
 	--gray: 96, 115, 159;
 	--gray-light: 229, 233, 240;
 	--gray-dark: 34, 41, 57;
@@ -159,11 +158,11 @@ hr {
 }
 
 .tag { 
-	background: rgb(var(--gray-mid));
+	background: rgb(var(--gray));
 	color: white;
 	border-radius: 10px;
 	padding: 1px 10px;
-	font-size: 0.8em;
+	font-size: 0.7em;
 	margin: 0 3px;
 }
 
@@ -194,7 +193,7 @@ hr {
 }
 
 .comments h3 {
-	border-top: 1px solid rgb(var(--gray-mid));
+	border-top: 1px solid rgb(var(--gray));
 	font-size: 1.3em;
 	font-weight: 300;
 	padding: 1.5em 0 0 0;

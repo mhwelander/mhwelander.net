@@ -1,0 +1,255 @@
+---
+title: 'ASP.NET MVC: Using a custom model binder to post a list of interface objects'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'Mar 29 2014'
+tags: [ASP.NET, MVC]
+---
+
+I'm taking a large Word form and turning it into an MVC application. The form has multiple sections, and each section has a number of fields associated with it. Every section has a title and description, but the fields are all of different types -- there is a comments field, a summary field, and a review field, for example. This is what my models look like.
+
+Each section has a list of `IField` objects.
+
+```csharp
+public class Section {
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public List<IField> Fields { get; set; }
+}
+```
+
+(In reality, there is also a `SectionViewModel` object.)
+
+The `IField` interface has a number of methods that must be implemented (it might be worth noting that this particular application does not use EntityFramework).
+
+```csharp
+public interface IField {
+    void Save();
+    void Populate();
+}
+```
+
+Finally, I've got a number of fields, each of which implement `IField` but do slightly different things. Here is what the `SummaryField` looks like:
+
+```csharp
+public class SummaryField : IField {
+ 
+    public string Summary { get; set; }
+ 
+    void Save()
+    {
+        // Saving actions
+    }
+ 
+    void Populate()
+    {
+        // Populating actions
+    }
+}
+```
+
+## Outputting form fields for each `IField`
+
+Each of these sections represent a 'page' of this gargantuan (100+ pages of Word, people) form. The view outputs the section's title, summary -- and each IField from the List object. To do that, I just created an Editor Template for each type of IField and called EditorFor on the list object ([read more about that here](./asp-net-mvc-model-binding-not-occurring-when-posting-list-of-complex-types/))
+
+```razor
+@model Section
+@Html.EditorFor(x => x.SectionFields)
+```
+
+Depending on the type of object (SummaryField will output /Views/EditorTemplates/SummaryField.cshtml), the framework will output a different EditorTemplate.
+
+So far so good, but what happens when you try to POST this form?
+
+## Posting a list of interfaces
+
+If you try to post this form, MVC will throw this error: Cannot create an instance of an interface. This is because the default model binder works by creating an instance of your model (and any properties it has) and mapping the posted field names to it; Section.Title maps to the Title property on the Section object, for example. However, `Section.SectionFields[0]` presents a problem -- you cannot create an instance of an interface (or an abstract class).
+
+The solution is to create and register a custom model binder for the `IField` class. A word of warning -- you could probably make this a lot more generic and reusable, but because I struggled with the examples of model binders that already exist, I've kept this example very simple.
+
+### Step 1 -- create and register your model binder
+
+First of all, create your model binder and inherit from the `DefaultModelBinder`     class:
+
+```csharp
+public class IFieldModelBinder : DefaultModelBinder {
+     protected override object CreateModel(
+    ControllerContext controllerContext,
+    ModelBindingContext bindingContext,
+    Type modelType) {
+    // Our work here
+        }
+}
+```
+
+Secondly, register it with your application -- this is usually done in `Application_Start` in Global.asax. What you are doing here is telling the application that whenever you come across an instance of `IField`, it should look to the custom model binder instead of the default one. 
+
+**Note:** If you find that you are creating and registering a lot of custom model binders, consider using a model binder provider to save you the trouble of registering each one individually: http://lostechies.com/jimmybogard/2011/07/07/intelligent-model-binding-with-model-binder-providers/
+
+```csharp
+protected void Application_Start(Object sender, EventArgs e) {
+    ModelBinders.Binders.Add(typeof(IField), new IFieldModelBinder());
+}
+```
+
+### Step 2 -- Casting each IField into its concrete type
+
+Notice that we are overriding the `CreateModel` method in our custom model provider. This method gives us access to the **incoming object type** which will be `IField`, and the `bindingContext`, which has access to all posted values (form fields, query strings, etc) via the `.ValueProvider.GetValue()` method.
+
+So our `IField` comes in. How can we tell the custom model provider what this field's **concrete type** is? Since we have access to all posted values, I created two new properties and associated hidden fields in my Editor Template -- one for for the field's class name (including namespace) and one for its assembly name.:
+
+```razor
+@model SectionSummary
+@Html.HiddenFor(x => x.FieldClassName)
+@Html.HiddenFor(x => x.FieldAssemblyName)
+```
+
+Now, whenever this particular field is posted, the custom model binder will have the information about the actual type available -- which means we can use it to cast the IField object and return a model that can be instantiated.
+
+```csharp
+public class IFieldModelBinder : DefaultModelBinder
+{
+    protected override object CreateModel(
+    ControllerContext controllerContext,
+    ModelBindingContext bindingContext,
+    Type modelType)
+    {
+ 
+        // Get the submitted type - should be IField
+        var type = bindingContext.ModelType;
+ 
+        // Get the posted 'class name' key - bindingContext.ModelName will return something like Section.FieldSections[0] in our particular context, and 'FieldClassName' is the property we're looking for
+        var fieldClassName = bindingContext.ModelName + ".FieldClassName";
+ 
+        // Do the same for the assembly name
+        var fieldAssemblyName = bindingContext.ModelName + ".FieldAssemblyName";
+ 
+        // Check that the values aren't empty/null, and use the bindingContext.ValueProvider.GetValue method to get the actual posted values
+ 
+        if (!String.IsNullOrEmpty(fieldClassName) && !String.IsNullOrEmpty(fieldAssemblyName))
+        {
+            // The value provider returns a string[], so get the first ([0]) item
+            var className = ((string[])bindingContext.ValueProvider.GetValue(fieldClassName).RawValue)[0];
+            // Do the same for the assembly name
+            var assemblyName =
+            ((string[])bindingContext.ValueProvider.GetValue(fieldAssemblyName).RawValue)[0];
+ 
+            // Once you have the assembly and the class name, get the type - I am overwriting the IField object that came in, but I do not think you have to do that
+            modelType = Type.GetType(className + ", " + assemblyName);
+ 
+            // Finally, create an instance of this type
+            var instance = Activator.CreateInstance(modelType);
+ 
+            // Update the binding context's meta data
+            bindingContext.ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => instance, modelType);
+ 
+            // Return the instance - which will now be a SummaryField or CommentField - rather than an IField
+            return instance;
+        }
+        return null;
+    }
+}
+```
+
+You will now be able to post your List object -- for each `IField`, the custom model binder will be called to figure out what the concrete type of each object is.
+
+Improvements and suggestions very welcome -- it took me a while to get my head around model binding, and I would love to know if there are other ways.
+
+<div class="comments">
+
+## Comments (imported from wordpress)
+
+### [Joshua Wheelock](https://www.facebook.com/joshua.wheelock.7)
+
+_June 9, 2014 at 18:34_
+
+Hi Martina,
+
+I've been scratching my head for a while trying to get around almost the exact same problem.
+
+I was trying to override the BindModel method of the DefaultModelBinder though. I'm trying to test out your approach, but am having trouble following your posted CreateModel() method. Could you elaborate on the posted code. For example are you overriding the CreateModel method of the base class? What about return objects? Not all paths of your example return a value.
+
+I'm pretty excited by your example, but could use a little help getting over this hurdle (if you don't mind).
+
+Thanks,
+Josh
+
+### Martina
+
+_June 10, 2014 at 09:37_
+
+    Hi Josh --
+
+    I have been very sloppy -- you are absolutely right; I was missing a 'return null' and a 'protected override object', and some of my variable names were inconsistent. I've checked the sample against the functioning original now and everything should be in order: https://gist.github.com/mhwelander/cc6d25bb5cbb5afc4394/raw/1ade45ba6768d77b39316b5c5782156d4d18106e/modelbinder
+
+### Pingback: [Multi-Tenancy | manohar nikkam](https://manoharnikkam.wordpress.com/2015/02/15/multi-tenancy/)
+
+### [Eugenio Miró](http://www.heimdall.com.ar/)*
+
+_May 20, 2015 at 21:21_
+
+Hi Martina,
+
+This is a great article that made me think I had the solution for my problem but after trying it in my case I realized that the type I was trying to bind was used in a WebApi Controller instead of in an ASP.NET MVC Controller, which is kind of different.\
+I'm researching now about it on the net but I wondered if you had that same experience already. Thanks for an amazing post by the way.
+
+### Martina
+
+Great stuff! Glad it was helpful -- it was good learning exercise for me. Can you describe the issue? Even if I don't know there's someone in my house who is doing WebApi form posting right at this very moment (good timing).
+
+### [Eugenio Miró](http://eugeniomiro.wordpress.com/)
+
+_May 21, 2015 at 21:53_
+
+My problem is almost the same as yours in this post, except that's within the context of an ApiController instead of a Controller.
+
+That means the binding follows a different path.
+I have an web api method with a parameter of a class that has a member that's a list of objects implementing an interface.
+
+The closest approach I found was in this article (http://www.asp.net/web-api/overview/formats-and-model-binding/parameter-binding-in-aspnet-web-api), which uses model binding for a class GeoPoint but not for a member of the class but for the class itself.
+
+I'm working on this path to see if I can make it work and will let you know if I'm successful with it but, in case you have a solution it will be nice to know about it.
+Thank you VERY much for answering so quickly.
+
+### Pingback: [Professional Development 5/26 through 5/31/2015 | Code Ukemi](https://codeukemi.wordpress.com/2015/05/31/professional-development-526-through-5312015/)
+
+### [Alexander](http://gravatar.com/alexandis)
+
+_September 3, 2015 at 18:37_
+
+Martina, your dimples are unbelievable 🙂 And... thanks for the article!
+
+### Dan
+
+_January 15, 2016 at 22:55_
+
+This post has saved me from going insane! I'm doing something very similar (fortunately not for 100 pages of forms but I have complex grid layouts instead) and I was certain that there had to be a way of binding to interfaces this but I couldn't get my head round the custom binder syntax at all to work it out.
+
+The one thing I changed is that I used an enum that linked to the types of "fields" I had as the bound property for ClassName and then used a helper class that took a value of that enum and returned a new object of the proper concrete type. I guess if you split across multiple assemblies this might not work but for me, this simplified the process of generating the required type.
+
+P.S. Don't do what I did which is remove the metadata update step as this will still work but will break any nesting you have in your model as the binder doesn't know that it needs to look for children!
+ 
+### Alex
+
+_December 7, 2016 at 19:33_
+
+Hi Martina, Great post. Thank you very much. I spent most of my day trying to resolve this problem and your post provided great insight to achieve what I was trying to achieve. Again Thank you and I wish you the best in your developer career. Cheers
+
+### Akmal
+
+_October 4, 2017 at 12:51_
+
+if (!String.IsNullOrEmpty(fieldClassName) && !String.IsNullOrEmpty(fieldAssemblyName)) condition does not make sense. fieldClassName and fieldAssemblyName cannot be string or empty
+
+### Laz
+
+_December 9, 2019 at 21:46_
+
+I have a multiple nested Interface -- and i was taking the parent level posted model, then doing about 200 lines of reflection code to recursively then go down through my generic, and their sub generics!
+
+Little did i realised that you could just provide a binder for EACH subtype, and mvc will trigger it whenever it encounters is, in a list or not!
+
+This post has just allowed me to cut a behemoth of code (something i was very proud of writing actually!) into something so much more simple!
+
+Thanks!
+
+</div>
