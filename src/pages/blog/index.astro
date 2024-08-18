@@ -1,0 +1,136 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../../components/FormattedDate.astro';
+
+interface YearGroup {
+    year: number;
+    posts: any[];
+}
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const groupedByYear = posts.reduce<YearGroup[]>((acc, post) => {
+  const year = post.data.pubDate.getFullYear();
+  
+  let yearGroup = acc.find(group => group.year === year);
+
+  if (!yearGroup) {
+    yearGroup = { year: year, posts: [] };
+    acc.push(yearGroup);
+  }
+  yearGroup.posts.push(post);
+  return acc;
+}, []);
+
+const result = groupedByYear.sort((a, b) => b.year - a.year);
+
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+
+			ul {
+				list-style-type: none;
+				margin: 0 0 2em;
+				padding: 0;
+			}
+
+			ul li {
+				margin: 0 0 1em 0;
+			}
+
+			ul li * {
+				text-decoration: none;
+				transition: 0.2s ease;
+			}
+		
+			ul li img {
+				margin-bottom: 0.5rem;
+				border-radius: 12px;
+			}
+			ul li a {
+				display: block;
+			}
+
+            .categoryTitle {
+                font-size: 2em;
+                margin: 0 0 1em;
+            }
+
+			.title {
+				margin: 0 0 0.1em 0;
+				color: rgb(var(--black));
+				line-height: 1;
+                font-size: 1.4em;
+                font-weight: normal;
+			}
+			.date {
+				margin: 0;
+				color: rgb(var(--gray));
+			}
+			ul li a:hover h3,
+			ul li a:hover .date {
+				color: rgb(var(--accent));
+			}
+			ul a:hover img {
+				box-shadow: var(--box-shadow);
+			}
+
+			@media (max-width: 720px) {
+				ul {
+					gap: 0.5em;
+				}
+				ul li {
+					width: 100%;
+					text-align: center;
+				}
+				ul li:first-child {
+					margin-bottom: 0;
+				}
+				ul li:first-child .title {
+					font-size: 1.563em;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section>
+					{
+                        result.map((group) => (
+                            <h2 class="categoryTitle">{ group.year }</h2>
+                            <ul>
+                                { group.posts.map((post) => 
+							<li>
+								<a href={`/blog/${post.slug}/`}>
+									<h3 class="title">{post.data.title}</h3>
+									<p class="date">
+										<FormattedDate date={post.data.pubDate} />
+
+										{post.data.tags.map((tag: string) => (
+	<span class="tag">{tag}</span>
+))}
+									</p>
+								</a>
+							</li>
+                            )}
+                            </ul>
+                            
+                        ))
+
+					}
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

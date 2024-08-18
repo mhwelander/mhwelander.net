@@ -1,0 +1,32 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { Image } from 'astro:assets';
+import image1 from '../images/pencil-drawing-eyes.jpg'
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Hej!</h1>
+			<p>
+
+I’m Martina 👋 I'm a Swede living in Copenhagen, and I draw and paint for fun. You can find me on <a href="https://instagram.com/martinahw.art">Instagram</a> and <a href="https://www.youtube.com/@martinadoesart">YouTube</a>, and I use this site to <a href="/blog">write down</a> anything useful I learn about art, filming, or life.
+			</p>
+
+			<figure class="centerFig">
+				<Image src={image1} alt="A pencil drawing of eyes." />
+				<figcaption>My sketchbook</figcaption>
+			</figure>
+			
+		</main>
+		<Footer />
+	</body>
+</html>

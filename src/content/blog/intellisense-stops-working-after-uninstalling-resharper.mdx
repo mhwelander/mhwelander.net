@@ -1,0 +1,14 @@
+---
+title: 'Intellisense stops working after uninstalling ReSharper'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'Nov 02 2012'
+tags: [Sitecore]
+---
+
+My ReSharper trial ran out this morning, and despite uninstalling ReSharper (via **Control Panel > Add/Remove Programs**) and resetting my Visual Studio 2010 settings (**Tools > Import / Export Settings > Reset all settings**), intellisense refused to return – until I deleted this folder from my project root:
+
+```
+_ReSharper.MyWebsite
+```
+
+I hope that saves someone the 2 hours it took me to figure out.
