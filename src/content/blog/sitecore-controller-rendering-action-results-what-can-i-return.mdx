@@ -1,0 +1,189 @@
+---
+title: 'Sitecore controller rendering action results – what can I return?'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'April 9 2014'
+tags: [Sitecore]
+---
+
+Sitecore controller rendering action results – what can I return?
+
+The two main (though by no means only) renderings available in Sitecore MVC are **view** and **controller** renderings.
+
+A view rendering only requires a references to a .cshtml file – Sitecore returns the model (the default RenderingModel or one of your choosing – [see part 2 of the Sitecore MVC video series](https://www.youtube.com/watch?v=dW_rQp9bMmE) for more information). A controller rendering requires you to specify a controller name and an action, the result of which is then rendered to the page.
+
+In standard ASP.NET MVC, an action result can be any number of things – a standard view, but also JSON, content, or an empty result. In this post I will explain which ones you can use in the context of a controller rendering, and why.
+
+## A look at the Sitecore MVC execution lifecycle
+
+Although there is nothing special about the controller you create to use with a controller rendering, the point at which that code is executed differs from the norm.
+
+Let’s say you have a page with 1 view rendering and 1 controller rendering. The Sitecore.MVC.config file in /App\_Config/Include gives you a clue as to what happens when a request – e.g. /cars/mitsubishi-lancer-evo-xi), the Index() action – comes in.
+
+In the section marked , the Sitecore controller is instantiated, and model binding for _view renderings_ occurs. This is the pipeline called .
+
+By the time we get to the , we are already in the  section of the pipeline. By the time we come to rendering out the actual _renderings_, the page has already started to render out – which means that any action results returned by **controller renderings** are taking place _after_ the main controller has executed.
+
+## How does this affect what you can return as an action result from a controller rendering?
+
+A controller rendering is still a rendering. This means that anything the specified action returns must be **visual content** of some kind, because part of the page it belongs to has already been rendered.
+
+### ViewResult (View()) and PartialViewResult (PartialView())
+
+ViewResult is the most common ActionResult to return – Sitecore copes fine with either `ViewResult` or `PartialViewResult`.
+
+### ContentResult (Content())
+
+If you were to return the following string as a ContentResult, Page Editor functionality (both inline editing and the ability to change the component’s datasource) will remain intact:
+
+```csharp
+var text = FieldRenderer.Render(RenderingContext.Current.Rendering.Item, "Text");
+return Content(text);
+```
+
+### EmptyResult
+
+If you return an EmptyResult, Sitecore will behave as though the rendering does not exist. If the only rendering assigned to a particular placeholder returns EmptyResult, that placeholder will appear to be empty.
+
+This might be useful if you want a hide a rendering that does not have an appropriate datasource assigned. However, be careful not to return EmptyResult in Page Editor mode, as the editor will not be able to select it to edit their mistake.
+
+### JSONResult (JSON()) or JavascriptResult (Javacript())
+
+Neither `JSON()` nor `Javascript()` can be returned from a controller rendering action. Returning this type of ActionResult will cause your entire page – including the Page Editor HTML – to be returned as plain text.
+
+### RedirectToAction
+
+In standard ASP.NET MVC, you might use `*RedirectToAction` in the following way:
+
+```csharp
+public ActionResult GetProduct(int productID)
+{
+    var product = _productRepository.GetProduct(productID);
+ 
+    if (product == null)
+    {
+        return RedirectToAction("MissingProduct", new { productID = productID } );
+    }
+ 
+    return View(product);
+}
+ 
+// Returns an error view if product does not exist
+public ActionResult NoProduct(int productID)
+{
+    return View(productID);
+}
+```
+
+In the above example, if no product is found, a separate ActionResult is responsible for dealing with what the user should see. This avoids littering each `ActionResult` with if statements, and makes them reusable.
+
+In a Sitecore context, GetProduct would map to a controller rendering. It would be one of several renderings on a page. You would expect RedirectToAction to affect the contents of that rendering _only_, but unfortunately this is not the case. It is still a redirect, and if you try to use it in a Sitecore context it will redirect _your entire page_ to a standard MVC route. For example, if you are on **/cars/mitsubishi-lancer-evo-xi** and any of the controller renderings performs a RedirectToAction as shown above, you will be to /Cars/NoProduct instead.
+
+Consider returning different views within your initial `ActionResult` instead:
+
+```csharp
+public ActionResult GetProduct(int productID)
+{
+    var product = _productRepository.GetProduct(productID);
+ 
+    if (product == null)
+    {
+        return View("~/shared/errors/_NoProduct.cshtml");
+    }
+ 
+    return View(product);
+}
+```
+
+### RedirectToRoute
+
+`RedirectToRoute` does work, but you will want to redirect to Sitecore’s default route, which looks like this:
+
+```csharp
+RouteTable.Routes.MapRoute( 
+  Sitecore.Mvc.Configuration.MvcSettings.SitecoreRouteName,  
+  "{*pathInfo}",  
+  new { scIsFallThrough = true },  
+  new { isContent = new Sitecore.Mvc.Presentation.IsContentUrlRestraint() });
+```
+
+And to use it:
+
+```csharp
+UrlOptions options = new UrlOptions {
+        AddAspxExtension = false
+    };
+
+    var url = LinkManager.GetItemUrl(item, options);
+
+    var trimmedUrl = url.TrimStart(new char[] { '/' });
+
+    return RedirectToRoute(
+            MvcSettings.SitecoreRouteName,
+            new { pathInfo = trimmedUrl });
+```
+
+### FileResult (File())
+
+If you try to return a file in a rendering’s ActionResult, you will get this error.
+
+```
+OutputStream is not available when a custom TextWriter is used
+```
+
+By the time we reach the rendering attempting to return a file stream, the page has already started rendering. If you want to return a file, use a custom route and RedirectToAction.
+
+## In summary
+
+It is important to remember that in a Sitecore context, controller actions map to a **rendering**, and by the time we come to execute these action results, much of the page will already have been rendered. Whatever they return needs to be something that can be displayed on screen, or a redirect.
+
+<div class="comments">
+
+## Comments (Imported from wordpress)
+
+### [Harsh Baid](http://www.harshbaid.in/)
+
+_April 12, 2014 at 08:41_
+
+Hi,
+
+Nice post. I have one question on this part that how the HttpPost will be handled when using View Renderings or Controller Renderings.
+
+Cheers to this post.
+
+### Martina
+
+_April 14, 2014 at 11:51_
+
+Hello --
+
+That's actually the topic of my next MVC video! 🙂 I'll summarize briefly how you actually do a post:
+
+Controller renderings will listen to [HttpPost] and [HttpGet], so if you post from a controller rendering (without specifying a custom route -- that's a different scenario), it will execute the same action, but look for the [HttpPost] version.
+
+However, if you have more than one rendering containing a form on a single Sitecore page, they will *all* post regardless of which button you click -- so you might need to check, in each one, which rendering the post is originating from.
+
+(You could also do an AJAX post and not have to worry about that.)
+
+View renderings have a post controller and action field on the definition item -- any post from a view rendering will go to whatever you have specified. I do not know if it will post all forms on the page, though.
+
+### [maarten](http://maartenbelmans.com/)
+
+_June 27, 2014 at 07:40_
+
+is there somewhere an example on how to return a (pdf) file to the browser through sitecore?
+
+### Martina
+
+_July 1, 2014 at 14:15_
+
+Pardon the delay! From the media library? There's an explanation here of how to get the media itme URL: http://stackoverflow.com/questions/11036843/link-to-sitecore-media-item
+
+
+### duskdrayper
+
+_June 17, 2015 at 17:36_
+
+What about a generated PDF file? I.e., can you please provide more details regarding "If you want to return a file, use a custom route and RedirectToAction."
+
+### Pingback: [File download issue with Sitecore MVC and resolution | Cooking with Sitecore](https://paragdaraji.wordpress.com/2015/05/07/file-download-issue-with-sitecore-mvc-and-resolution/)
+</div>
