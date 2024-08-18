@@ -1,0 +1,12 @@
+---
+title: 'Get items by template ID in XSLT'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'Jan 17 2013'
+tags: [Sitecore]
+---
+
+If you are trying to get an item by template ID in XSLT, the correct attribute is `@tid` – not `templateid`, or `templatekey`.
+
+```xsl
+<xsl:variable name="itinerary" select="$sc_item/descendant-or-self::item[@tid = '{EC705A7F-B1DD-46AC-9EEF-0E377B31A740}']" />
+```

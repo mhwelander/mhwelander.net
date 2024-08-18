@@ -1,0 +1,42 @@
+---
+title: 'Check if item is a MediaItem'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'Mar 8 2013'
+tags: [Sitecore]
+---
+
+You can check if an item is a media item by using:
+
+```csharp
+item.Paths.IsMediaItem
+```
+
+It checks if ‘media library’ is part of the item’s path.
+
+I had a multilist of items that could be either regular content items or media items, and needed to loop through and render a link for each one. Because you use different methods to render a MediaItem link (`MediaManager.GetMediaUrl()`) and regular item link (`LinkManager.GetImageUrl()`), I needed to know what type the item was.
+
+<div class="comments">
+
+## Comments (imported from wordpress)
+
+### [Mike Reynolds](http://sitecorejunkie.wordpress.com/)
+
+_March 11, 2013 at 00:48_
+
+Hi Martina,
+
+Sitecore.Data.ItemPath — items.Paths is an instance of this class — has another similar property for content items: IsContentItem. This helps calling code ascertain if the item is a descendant of /sitecore/content/.
+
+Mike
+
+### [Thomas D](http://tseonet.blogspot.be/)
+
+_August 23, 2013 at 08:31_
+
+Hi,
+
+The property IsMediaItem just checks if the path starts with “/sitecore/media library/”. So a media folder within the media library is also considered a MediaItem. I handled this by also checking on TemplateID:
+
+item.Paths.IsMediaItem && item.TemplateID != TemplateIDs.MediaFolder
+
+</div>

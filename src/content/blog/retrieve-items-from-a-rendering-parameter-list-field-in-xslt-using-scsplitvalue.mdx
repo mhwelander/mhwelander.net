@@ -1,0 +1,15 @@
+---
+title: 'Retrieve items from a rendering parameter list field in XSLT using sc:SplitValue'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'Nov 16 2012'
+tags: [Sitecore]
+---
+
+You cannot `sc:SplitFieldValue` on a rendering parameter (e.g. a multilist of items) because that method takes a field name rather than a comma-delimited string of IDs. To split a rendering parameter string, use `sc:SplitValue`:
+
+```xsl
+<xsl:for-each select="sc:SplitValue($testitems, '|')">
+      <xsl:variable name="myitem" select="sc:item(text(),.)" />
+      <xsl:value-of select="$myitem/@name"/>
+</xsl:for-each>
+```

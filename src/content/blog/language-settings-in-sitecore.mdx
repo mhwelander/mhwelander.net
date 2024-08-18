@@ -1,0 +1,87 @@
+---
+title: 'Language settings in Sitecore'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'May 30 2013'
+tags: [Sitecore]
+---
+
+There are a myriad of language settings in Sitecore (both on .config and in the core db) -- I sat down and worked out what you edit where; question in red, if anyone's got a minute to do a bit of research. 🙂
+
+## Site language as seen by visitors
+
+To determine what the default language is for visitors accessing your site, change the language attribute on the appropriate site node in web config:
+
+```xml
+<site name="website" language="en-US" ... >
+```
+
+## Sitecore client language
+
+When we say client language, we mean the actual text used in the Sitecore interface -- e.g. the word 'Template Manager' in the Sitecore menu, or the word 'Edit'. Client translation files are available here: http://sdn.sitecore.net/Resources/Client_Translations/CMS%20Client%20Translations.aspx
+
+```xml
+<setting name="ClientLanguage" value="en-US" />
+```
+
+## Default content language for author logging into Sitecore
+
+You can determine what language should be selected by default on a per user basis -- open the User Manager, edit the user, and change the Default Content Language -- e.g. Sven might want Swedish to be his default selection, Maria might want Turkish to be her default selection.
+
+If you have a multi-site instance and want your location in the tree to determine what language is selected, have a look at this blog post: http://blog.boro2g.co.uk/automatically-set-the-language-of-the-content-editor/
+
+You can set a default content language by changing the language attribute on shell:
+
+```xml
+<site name="shell" ... language="en-US" ... />
+```
+
+There is a per-site attribute called `contentLanguage`, but that does not seem to affect the default -- if anyone has made it work, let me know.
+
+## Restricting access to languages
+
+To restrict what languages a user can view, use the Security Editor to deny access to the language items under /System/Languages like you would with any other Sitecore item.
+
+
+<div class="comments">
+
+## Comments (imported from wordpress)
+
+### [Oliver](http://haberei.wordpress.com/)
+
+_April 17, 2016 at 16:38_
+
+Great summary of the language settings in Sitecore, thanks for sharing!
+
+### Esben Bugge
+
+_June 9, 2016 at 14:25_
+
+Hi Martina. I am using Sitecore 8.1. When I set the Default Content Language on some user to Swedish and log in with that user, the default selected language on the items in the Content Editor is always English. Did you find that this actually works in SC 8.1? Anything else I need to do?
+
+### Martina
+
+_June 9, 2016 at 14:39_
+
+Hi! Yes, the same steps work for me in 8.1 -- here's a video of exactly what I tried: http://screencast.com/t/quR56Fegh
+
+Could it be a browser caching issue?
+
+### Esben Bugge
+
+_June 10, 2016 at 14:59_
+
+I have the same settings as you and have tried clearing cache, but it still defaults to English instead of Swedish, which is what I selected in my Default Content Language setting.
+
+### Martina
+
+_June 10, 2016 at 15:04_
+
+What do you have in config? I have language="en" on the "shell" site. Do you have language fallback enabled? Is the user in question an admin?
+
+### Esben Bugge
+
+_June 15, 2016 at 12:32_
+
+I found that the sitecore\client\Applications\Launchpad\PageSettings\Buttons\ContentEditing\ContentEditor item in the core database contained the following link: `/sitecore/shell/Applications/Content Editor.aspx?sc_bw=1&la=en&fo={97B1DD7A-68F2-4D8C-8752-CC83FE9E0293}`. The "la=en" will overwrite the user settings, so when I removed "la=en", it started working for me.
+
+</div>

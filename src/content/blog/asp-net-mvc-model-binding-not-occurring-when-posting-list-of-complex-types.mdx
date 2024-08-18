@@ -1,0 +1,310 @@
+---
+title: 'ASP.NET MVC – Model binding not occurring when posting list of complex types'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'Mar 26 2014'
+tags: [ASP.NET, MVC]
+---
+
+Some background -- I am turning a gigantic Word form into an MVC application where each 'page' represents a small section of that form, and I had some trouble posting the model back to be saved. Lists of complex types -- in my example, List -- were coming back as null.
+
+I have a class called `Section.cs`:
+
+```csharp
+public class Section
+    {
+        public string SectionName { get; set; }
+        public List<Field> SectionFields { get; set; }
+    }
+```
+
+Each section can have any number of Field objects -- and each field has a value (this example has been simplified; the actual model has a lot more properties):
+
+```csharp
+public class Field
+    {
+        public string Value { get; set; }
+    }
+```
+
+I created a view for my Section with a form. The SectionName property is just a string, so you can just call:
+
+```razor
+@html.EditorFor(model => model.SectionName)
+```
+
+MVC knows how to deal with a String, and will return the appropriate form input (you can, of course, create your own Editor Templates for simple types).
+
+Field, on the other hand, is a complex type -- and the best way to deal with complex types is to create a custom Editor Template (this is done by creating a partial view under /Views/EditorTemplates with the same name as your complex type):
+
+```razor
+@model Field
+ 
+<label class="radio-inline">
+    @html.LabelFor(x => x.Value)
+    @html.TextBoxFor(x => x.Value)
+</label>
+```
+
+In my Section view, I iterated over my list of Field objects and called @html.EditorFor() on each, knowing that I had an Editor Template set up.
+
+```razor
+@model Section
+ 
+@html.EditorFor(model => model.SectionName)
+ 
+@foreach(Field field in model.Fields)
+{
+    @html.EditorFor(f => field)
+}
+```
+
+I got a label and a textbox for each field in my list -- but when I tried to post my form, the Fields object was always null.
+
+It turns out (thank you http://stackoverflow.com/a/9143266/3257985) that the default MVC model binder makes it much simpler. Rather than iterating over the list of Field objects, I can just do:
+
+
+```razor
+@model Section
+
+@html.EditorFor(model => model.SectionName)
+@html.EditorFor(model => model.Fields)
+```
+
+If you look at the generated html for the Value property of each Field object, you will see why this works. Iterating over the list of fields produced this value for the input's name attribute:
+
+```csharp
+Section.field.Value
+```
+
+The model binder relies on the input's name to work out what to do with the value -- and this does not tell the model binder enough. It will find the Section object, but there is no such thing as 'field' (which comes from the use of 'field' here: @html.EditorFor(f => field)
+
+This is what the name attribute looks like on the example that works:
+
+```csharp
+Section.Fields[0].Value
+```
+
+The model binder can work out that you are targeting the Value property on the first object in the Fields list on the Section object. Model binding will work, and your complex type will be posted.
+
+<div class="comments">
+
+### [Ryan Couch](https://www.facebook.com/AddenMobbs)
+
+_December 5, 2014 at 15:00_
+
+I am trying to understand this and I believe you need to rename all the code blocks that reference "model.fields" with model.SectionFields then the very last code block becomes: Section.SectionFields[0].Value
+
+..or am I way off?
+
+I am dealing with a similar issue and still struggling to make the model binding work.
+I am about to rip out the relevant code and make a really simple project just to prove it all out.
+
+### [Ryan Couch](https://www.facebook.com/AddenMobbs)
+
+_December 5, 2014 at 20:33_
+
+I finally solved my problem, and in the off chance it may help someone else...
+`{ get; set; }` on the list is super important 🙂
+
+my model class was defined like so:
+
+```
+public List SectionFields = new List();
+```
+
+changed to:
+
+```
+public List SectionFields { get; set; }
+```
+
+now the data is coming back from the controller and it makes total sense now why it didn't before.
+
+### Martina
+    
+_December 8, 2014 at 09:16_
+
+Glad you solved the problem! I have a feeling I had exactly this problem, so I'm glad you highlighted the issue in your comment.
+
+### Randall
+
+_September 29, 2015 at 03:03_
+
+This is an old post, but right now I'm in love with you!! Being trying to find why my model didn't bind correctly and this was it.
+
+### [Joe](http://www.nerdboy.co.uk/)
+
+_February 15, 2017 at 09:51_
+
+I've had this exact problem, been working on it for a few hours now 😦
+I'm not sure why changing from a public variable to a property is required...But your solution worked, thanks for sharing!
+
+### [Diego](http://gravatar.com/roquini)
+
+_April 6, 2015 at 15:53_
+
+Hi!!! I've got something like that BUT my template has fields that user should fill, but those new values doesn't go to my controller, after post. Do you have any idea?
+
+thanks for your post, really helped me a lot
+
+### Martina
+
+_April 8, 2015 at 11:47_
+
+Hi! Would you be able to post your view & controller action? 🙂 Glad the post helped.
+
+### asdf
+
+_June 1, 2015 at 05:29_
+
+aww thats jsut super. until it comes time to creating and deleting items on the client and then MS will just fuck you up the arse once again
+
+### Momo Bachman
+
+_March 9, 2017 at 16:26_
+
+I have been trying to figure out why my view returned a null list for hours and it was something as simple as forgetting the `{get; set;}` in my model. THANK YOU SO MUCH, I was over-complicating things to the max.
+
+### sylvia
+
+_April 18, 2017 at 16:01_
+
+Hi, I am pretty much in the same fix and have not been advised to use EditorFor template.So my Model is as below --
+
+Hi, I am pretty much in the same fix and have not been advised to use EditorFor template.So my Model is as below
+
+```csharp
+public class ForcastDetailEntity
+{
+public ForcastDetailEntity()
+{
+CourseCategories = new List();
+//NomineesList=new List();
+DirectReportsList=new List();
+
+}
+
+public long Id { get; set; }
+public long PortfolioId { get; set; }
+public int? ForcastedYear { get; set; }
+public DateTime? ModifiedAt { get; set; }
+public long? ModifiedBy { get; set; }
+public long? ParentFk { get; set; }
+public int Status { get; set; }
+public long? ManagerId { get; set; }
+public List DirectReportsList { get; set; }
+
+public List CourseCategories { get; set; }
+
+public class CourseGroupEntry
+{
+public CourseGroupEntry()
+{
+Courses = new List();
+}
+public string Name { get; set; }
+public List Courses { get; set; }
+
+}
+public class ForcastedFigureEntry
+{
+public ForcastedFigureEntry()
+{
+NomineesList=new List();
+}
+public long ForecastedTemplateId { get; set; }
+public string EntityName { get; set; }
+public string EntityCode { get; set; }
+public int ForcastedNumbers { get; set; }
+public DateTime SubmittedAt { get; set; }
+public long SubmittedBy { get; set; }
+public long ForcastedPortfolioCourseId { get; set; }
+public long ForcastedFigureId { get; set; }
+public List NomineesList { get; set; }
+}
+
+public class CourseEntry
+{
+public CourseEntry()
+{
+ForecastedFiguresItem = new ForcastedFigureEntry();
+}
+public long CourseId { get; set; }
+public long PortfolioCourseId { get; set; }
+public string Name { get; set; }
+public string Code { get; set; }
+public int CsfHours { get; set; }
+public int DurationNumber { get; set; }
+public string DurationUnit { get; set; }
+public string Modality { get; set; }
+public bool IsPilot { get; set; }
+public ForcastedFigureEntry ForecastedFiguresItem { get; set; }
+}
+public class NomineesEntry
+{
+public long Id { get; set; }
+public string NominatedEmployeeName { get; set; }
+public long ForcastFigureId { get; set; }
+}
+
+public class DirectReportsEntry
+{
+public long Id { get; set; }
+public long CompanyId { get; set; }
+public string CompanyName { get; set; }
+public long DepartmentId { get; set; }
+public string DepartmentCode { get; set; }
+public string DepartmentName { get; set; }
+public long ManagerId { get; set; }
+public string ManagerCode { get; set; }
+public string ManagerName { get; set; }
+public string LearningOfficerCode { get; set; }
+public long ForecastStatusId { get; set; }
+public string ForecastStatusName { get; set; }
+public string TemplateLink { get; set; }
+public bool IsSelected { get; set; }
+public long ForecastTemplateId { get; set; }
+public long ModifiedBy { get; set; }
+public long ModifiedAt { get; set; }
+}
+}
+}
+```
+
+My View contains several partial views
+
+```razor
+@model Project.Academy.Data.Entity.ForcastDetailEntity
+@using (@Html.BeginForm(“SubmitForecastedFigure”, “Forcast”, FormMethod.Post, new {id = “StakeholdersForecast”}))
+{
+
+GCA L&D Forecast Template @Model.ForcastedYear
+
+@Html.Hidden(“hdnPortfolioId”, @Model.PortfolioId)
+
+@for(var i = 0; i m.CourseCategories[i].Courses,new { Value = @Model.CourseCategories[i].Courses})
+}
+
+
+Cancel
+
+
+Save
+
+}
+```
+
+and my controller function is as below –
+
+```
+public ActionResult SubmitForecastedFigure(ForcastDetailEntity model)
+{
+var logic = new ForcastLogic();
+logic.SaveForeCastedFigure(model);
+return null;
+}
+```
+
+When I try to post the controller is not able to get the Courses whose count =0
+
+</div>

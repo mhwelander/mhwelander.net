@@ -1,0 +1,53 @@
+---
+title: 'Sitecore presentation details: How do you deal with content that appears on every page?'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'Nov 14 2012'
+tags: [Sitecore]
+---
+
+
+I have a footer with some content that appears on every page:
+
+![A website footer](./images/2012/capture-footer.png)
+
+My requirements for this footer are:
+
+-   The footer must be identical on every page, and it should not be possible for an editor or administrator to remove the footer, re-order the components, or change the content on a **per-page basis**
+-   The editor should be able to choose whether there are two, three, or four components in the footer
+-   The editor should be able to edit the content in each component
+-   The solution must work for a multi-site installation
+
+The options I have come up with are:
+
+-   Have a 'footer' root folder in a configuration folder with a number of 'component' children -- the footer sublayout finds the footer root folder by template, loops through the children and outputs the content, but caps the number at 4
+-   Have a 'footer' configuration item with a 'components' multi-list and a 'sublayout' droptree -- pick the sublayout that you want to use (two column block, three column block, four column block) and for each item selected in the multi-list, dynamically add the chosen sublayout to a placeholder and set the item as the data source
+
+The second option doesn't seem particularly clean, and the first option is a very different way of adding content compared to the usual 'add component' > 'set datasource'.
+
+How would you solve this problem? Do you think that it is a relevant use case?
+
+<div class="comments">
+
+## Comments (imported from wordpress)
+
+### [Mike Reynolds](http://sitecorejunkie.wordpress.com/)
+
+_November 14, 2012 at 14:32_
+
+Hi Martina,
+
+I would go with a solution similar to option 1, but set your footer sublayouts’ datasource to being the footer root folder — this will help out in not hard-coding any xpath queries. I’ve used http://svn.sitecore.net/SublayoutParameterHelper/Trunk/Web/UI/Sublayouts/ to get the sublayouts’ Datasource Items in the past.
+
+You might also want to avoid hard-coding the maximum number of items — the design could change in the future where another number might be called for, and you would have to make a code change to make it work. I would make this number content editable.
+
+I hope this helps.
+
+Mike
+
+### Martina
+
+_November 14, 2012 at 14:35_
+
+Thanks Mike – that’s very helpful. Your approach is better from a DMS point of view, too (personalization and A/B testing of different footers).
+
+</div>

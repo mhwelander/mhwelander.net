@@ -1,0 +1,125 @@
+---
+title: 'Raw vs rendered field values'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'Feb 19 2014'
+tags: [Sitecore]
+---
+
+## What are raw and rendered values?
+
+In Sitecore, there are two ways of getting data out of a field -- the raw value or the rendered value.
+
+A field's raw value is how the data is stored in the underlying database -- for simple fields such as Single Line Text, there is no difference between the rendered and raw values; it's just plain text.
+
+This is not the case for more complex fields types, such as General Link, Image, or Rich Text. Take the raw value of  a General Link field, for instance -- if you enable raw values in the Content Editor (by clicking the View tab and ticking Raw values) and look at an item with a General Link field, you will see that the value stored in the database is custom XML:
+
+```xml
+<link text='My link' linktype='internal' class='' alt='Go here'  querystring='' id='{110D559F-DEA5-42EA-9C1C-8A5DF7E70EF9}'>
+``` 
+
+This XML contains all the information required to construction a clickable anchor tag, but you clearly cannot output it to the browser as is.
+
+## How do I output raw values?
+
+If you want to output the raw value of a field (which is perfectly acceptable for Reference fields, such as a droplink), you have two options.
+
+The first method will either return a value or an empty string (including when the field does not exist). You will not get a null reference exception:
+
+```csharp
+item["MyField"]
+```
+
+The second method will either return a value or throw a null reference exception if the field does not exist:
+
+```csharp
+item.Fields["MyField"].Value
+```
+
+**Note:** If you are dealing with a field that does not contain content -- such as a reference field, multilist field, or checkbox field -- you may want to retrieve the field as a strongly typed object and use its methods. For example, the `MultilistField` object has a `GetItems()` method:
+
+
+```csharp
+MultilistField m = item.Fields["MyMultilistField"];
+
+var myItems = m.GetItems();
+```
+
+## How do I 'render' field values?
+
+Rendered field values are field values that have gone through some kind of processing before appearing in the browser. This only applies to fields that contain content -- there is no need to render a multilist field (which is just a pipe-separate list of IDs) or a checkbox field (which is a boolean). To render a field, use the `FieldRendered.Render()` method:
+
+```csharp
+string myRenderedValue = FieldRenderer.Render(myItem, "MyFieldValue");
+```
+
+The rendered version of our General Link field would be a standard <a href="" />, with a friendly URL rather than an ID.
+
+All Sitecore controls (such as `<sc:Text />`, `<sc:Image />`, `<sc:Link />`) eventually go through the FieldRenderer.Render() method, and will produce the same result.
+
+**Note:** If you use XSLT, this also applies to `sc:field() -- if you want the raw value in XSLT, use `sc:fld()` instead.
+
+## Why should I use FieldRenderer.Render()?
+
+The obvious reason to use FieldRenderer.Render() is that it transforms custom XML into HTML, as is the case for the General Link and Image field types. Other reasons include:
+
+-   The act of going through FieldRenderer.Render() is what enables Page Editor support -- you will not be able to edit field values that have been output as a raw values.
+    -   If you wish to disable Page Editor support for a particular field, pass a parameter in to the Render method (there is a corresponding attribute on the Sitecore controls that will do the same thing):
+
+```csharp
+FieldRenderer.Render(item, "MyField", "disable-web-editing=true")
+```
+
+Rich text field links and an images are stored with dynamic URLs (e.g. "~/link.aspx?_id=3454C251162749BCA64E2495B3EAB0C5&amp;_z=z")  -- this is great when items are renamed or moved because it prevents broken references, but they are not SEO-friendly. The FieldRenderer transforms these IDs into paths.
+
+## What about MVC?
+
+There is an MVC-style helper that also goes through the FieldRenderer.Render() method:
+
+```csharp
+@Html.Sitecore().Field(item, "MyField")
+```
+
+You can pass parameters into into the .Field() method in exactly the same way.
+
+
+<div class="comments">
+
+## Comments (imported from wordpress)
+
+### [Mike Reynolds](http://sitecorejunkie.wordpress.com/)
+
+_February 19, 2014 at 21:37_
+
+Great post Martina!
+
+Thought I would mention that developers are able to add/override/remove how values are rendered by adding/overriding/removing pipeline processors.
+
+I have some examples of these at http://sitecorejunkie.com/category/render-field/.
+
+Mike
+
+### [Mike Reynolds](http://sitecorejunkie.wordpress.com/)
+
+_February 19, 2014 at 21:39_
+
+`<renderField>` pipeline processors --- WP stripped this out!
+
+### [Pingback: CustomItemGenerator -- Raw Vs Text value | TechItPro](http://techitpro.com/customitemgenerator-raw-vs-text-value/) 
+
+### Gavin
+
+_August 25, 2017 at 08:13_
+
+Hi, nice post! I was hoping to find a way to dictate which site Dynamic Links in Rich Text resolve too? I've tried using SiteContextSwitcher thinking it will use the site I read the item from Sitecore with, but it doesn't and now I'm a bit stumped!
+
+Thanks,
+Gavin
+
+
+### Gavin
+
+_August 25, 2017 at 13:26__
+
+I take it back, it was working correctly using: SiteContextSwitcher 🙂
+
+</div>

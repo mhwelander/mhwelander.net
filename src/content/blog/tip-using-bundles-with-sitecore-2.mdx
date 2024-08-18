@@ -1,0 +1,22 @@
+---
+title: 'Tip: Using bundles with Sitecore'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'Feb 06 2014'
+tags: [Sitecore]
+---
+
+If you are using Bundles with ASP.NET, your generated JS or CSS reference will look something like this:
+
+```html
+<link href="/bundles/css?v=cpIM3_ePEQRK4Cm2oRdV4r0frJ3SdX2kHiKOGjdViSA1" rel="stylesheet">;
+```
+
+However, because all requests go through Sitecore’s HttpRequest pipeline, Sitecore will return a ‘Page not found’ error for that dynamically generated URL.
+
+To avoid this problem, add the root of any dynamically generated content (‘bundles’ in my example) to the IgnoreUrlPrefixes setting in Sitecore’s web.config:
+
+```xml
+<setting name="IgnoreUrlPrefixes" value="/sitecore/default.aspx|/trace.axd|/webresource.axd|/sitecore/shell/Controls/Rich Text Editor/Telerik.Web.UI.DialogHandler.aspx|/sitecore/shell/applications/content manager/telerik.web.ui.dialoghandler.aspx|/sitecore/shell/Controls/Rich Text Editor/Telerik.Web.UI.SpellCheckHandler.axd|/Telerik.Web.UI.WebResource.axd|/sitecore/admin/upgrade/|/layouts/testing|/bundles">
+```
+
+Sitecore will not attempt to process this URL and your CSS/JS will work.
