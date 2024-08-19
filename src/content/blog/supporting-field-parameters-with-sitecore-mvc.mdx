@@ -1,0 +1,120 @@
+---
+title: 'Supporting field parameters with Sitecore MVC'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'June 16 2014'
+tags: [Sitecore, MVC]
+---
+
+## What are field parameters?
+
+If you are familiar with Sitecore Web Forms, you will know that there are a number of Sitecore field controls that are specific to the field type. These include the text, image and link. Each control has field parameter attributes that are specific to that field type. For example, the image control has `MaxWidth` and `MaxHeight`:
+
+```html
+<sc:Image Field="Page Image" MaxWidth="500" runat="server" />
+```
+
+All of these controls eventually hit the `FieldRenderer` pipeline. This pipeline is responsible for turning properties like `MaxWidth` into a query string, which is passed into `FieldRenderer.Render()` method. The example above would look like this:
+
+```csharp
+FieldRenderer.Render(item, "Page Image", "mw=500")
+```
+
+In Sitecore MVC, you will eventually through exactly the same method to render your fields.
+
+## How do I use field parameters with Sitecore MVC?
+
+In Sitecore MVC, the answer to the library of Web Forms controls is the `@Html.Sitecore().Field()` helper. This is generic, and will deal with any field type. To pass in field parameters, pass in an object with a comma-delimited list of your field parameters. These should be in the same format as the properties you would pass into `FieldRenderer.Render()`. In the example below, we are specifying a max width (`mw`) and a max height (`mh`) for an image field.
+
+```razor
+@Html.Sitecore().Field("Page Image",` `new` `{ mw = 300, mh = 200, @``class` `= "imageLeft" })`
+```
+
+Notice that we have also specified a CSS class for the image tag -- anything that the field renderer pipeline does not recognize as a field parameter -- like `data-*` attributes -- will be added to the image tag as an HTML attribute (this is standard in ASP.NET MVC).
+
+If you want to guide your developers, you can create custom helpers for different field types. [This example](https://github.com/Sitecore-Community/sample-sitecore-mvc/blob/master/MVC/Helpers/SitecoreFieldHelper.cs) shows you how to create a custom helper for image fields, which will appear as:
+
+```razor
+@Html.Sitecore().ImageField()`
+```
+
+You could easily recreate a suite of helpers that match the Web Forms controls.
+
+## Field parameters and custom models
+
+This is all well and good if you are using the `@Html.Sitecore().Field()` helper, but what happens if you are returning strongly typed models to your view?
+
+```razor 
+@Model.PageImage`
+```
+
+There is one crucial problem here: if I wanted to re-use this model for another view but with an additional field parameter (such as max width), how would I pass that in?
+
+I see a number of solutions to that problem.
+
+### Always use view models
+
+You can [read more about view models here](http://geekswithblogs.net/michelotti/archive/2009/10/25/asp.net-mvc-view-model-patterns.aspx), but they are essentially models that are specific to the particual view they are being returned to. They contain all or parts of the data model (or 'domain model') in addition to properties that are specific to the view.
+
+For example, you might have a `Car` domain model, but you would encapsulate it in `EditCarViewModel` or `FeaturedCarViewModel` depending on the view you were returning.
+
+You could do the same with Sitecore MVC. If you had a component that required the `PageImage` property to be returned with the max width set to 500 in the Gallery component but 200 in the Spotlight component, use a different view model for each one. When that view model is assembled, `PageImage` is set with whatever parameter is required for that particular view model.
+
+However, this might add a lot of additional work if there are only very slight variations between your views.
+
+### Pass field parameters into view model builder from the controller
+
+The controller is responsible for building your view model. Here is a (very simplistic) example of a controller that requests a view model from a view model builder:
+
+```csharp
+public ActionResult GetFeatured() {
+
+    CarViewModel car = _viewModelBuilder.GetCarViewModel();
+
+}
+```
+
+This view model builder could be used by multiple renderings if you passed in a dictionary of field parameters:
+
+```csharp
+public ActionResult GetFeatured() {
+    var dictionary = new Dictionary&lt;string, string&gt;();
+
+    dictionary.Add("PageTitle", "disable-web-editing=true");
+
+    CarViewModel car = _viewModelBuilder.GetCarViewModel(dictionary);
+}
+```
+
+The view model builder could reflect the properties of the requested view model class, check if an entry exists in the dictionary, and call `FieldRenderer.Render` with those parameters. I do this on lines 55 -- 60 here: https://github.com/Sitecore-Community/sample-sitecore-mvc/blob/master/MVC/Controllers/LocationController.cs
+
+### Always output properties that need to be rendered using @Html.Sitecore().Field()
+
+Another option is to avoid storing rendered information as properties at all. Technically, the rendered HTML is the responsibility of the *view*, not the model, so it would make sense to construct the tags in the view by using the `@Html.Sitecore().Field()` helper as normal. It would be no different from manually constructing the tags in a regular ASP.NET MVC view (or using a custom helper).
+
+Your model, which should only contain data according to ASP.NET MVC best practices, might have a property for the raw value -- the URL (or referenced Sitecore item's ID). If you were to create an edit view for your model, it is the URL you would edit, not the entire anchor tag.
+
+## In summary
+
+The point here is that you should anticipate that the way a value is rendered may differ between renderings. You will quickly find that a single domain model (such as `Car`) cannot account for the different ways in which that model's data needs to be presented. This is particularly true of images, which often need to be resized using Sitecore's max width and max height field parameters.
+
+## Edit: On `data-*` attributes
+
+Note: As pointed out by Brad Christie in the comments, Sitecore does not handle data-* attributes in the way standard MVC does. Please [refer to his blog post for more information](http://brad-christie.com/blog/2014/09/24/using-data-attributes-with-sitecore-mvc/).
+
+<div class="comments">
+
+## Comments (Imported from wordpress)
+
+### [bradchristie](http://www.brad-christie.com/blog/)
+
+_September 24, 2014 at 21:33_
+
+I know I'm a little late, but I just wanted to point out that data-* attributes don't behave (in Sitecore) the way you'd expect. I won't link directly to my blog post about it (you can look for it if you're so inclined), but suffice it to say you need to get it to the pipeline for it to allow MVC-esque data_*->data-* mapping.
+
+### Martina
+
+_September 25, 2014 at 10:33_
+
+Oh perfect -- that was quick blogging work! I have amended the post and pointed people to your blog.
+
+</div>

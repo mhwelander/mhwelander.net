@@ -1,0 +1,99 @@
+---
+title: 'Passing data between actions in Sitecore MVC'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'May 22 2014'
+tags: [Sitecore, MVC]
+---
+
+In standard ASP.NET MVC, you may be accustomed to seeing `RedirectToAction`. This allows you to specify a controller and action to redirect to, as well as any additional parameters you might want to pass along. In the following example, the `VoteForCar` action (which is triggered by submitting a form post) performs some voting logic, and then redirects to a generic `Confirmation` action (to which it also passes an `id` parameter). This action returns a thank-you view with additional fun facts about the car that you just voted for, which it retrieves using the ID that the `RedirectToAction` supplied.
+
+```csharp
+[HttpPost]
+public ActionResult VoteForCar(int id, string voterName) {
+     
+    // Voting logic
+ 
+    RedirectToAction("Confirmation", new { carID = id });
+}
+ 
+public ActionResult Confirmation(int carID) {
+ 
+    var fact = GetRandomFunFact(carID);
+ 
+    return View(fact);
+}
+```
+
+## But you can't use RedirectToAction in Sitecore
+
+In Sitecore, you cannot use `RedirectToAction`. If `VoteForCar` was a controller rendering action, you might think that using `RedirectToAction` would simply refresh the page and change the output of that particular controller rendering to the result of the `Confirmation`. This is not the case. Instead, using `RedirectToAction` will interrupt the rendering of the Sitecore page and take you to the plain ASP.NET MVC view being output by the `Confirmation` action.
+
+However, you *can* still use `RedirectToRoute` -- and it is possible to pass along parameters in exactly the same way.
+
+```csharp
+[HttpPost]
+public ActionResult VoteForCar(int id, string voterName) {
+     
+    // Voting logic
+ 
+    var options = new UrlOptions
+    {
+        AddAspxExtension = false,
+        LanguageEmbedding = LanguageEmbedding.Never
+    };
+ 
+    var pathInfo = (LinkManager.GetItemUrl(Sitecore.Context.Database.GetItem(new ID("{81B81009-4C09-4D31-88A0-4486A7FE35E0}")), options));
+ 
+        return RedirectToRoute(MvcSettings.SitecoreRouteName, new { pathInfo = pathInfo.TrimStart(new char[] { '/' }), carID = id });
+    }
+}
+```
+
+At the very least, `RedirectToRoute` requires `pathInfo` to be set to the URL of the Sitecore item that you wish to redirect to. I have removed the `.aspx` extension and language embedding using `UrlOptions`, but you can change these settings globally on the `linkManager` in `web.config` instead.
+
+Keep in mind that any controller rendering on the page that you are redirecting to will be able to access the `carID` parameter. Let's say you have a 'Confirmation' controller rendering that maps to the `Confirmation` action result. If there is a `carID` in the query string, it will output a fun fact about the car you selected -- if not, it will just say 'Thank you for voting!'.
+
+But what happens if an editor -- using the Page Editor -- adds an additional component to the confirmation page, and it *also* relies on a `carID` parameter -- but for different reasons? Doesn't matter -- the new component detects that `carID` exists in the query string and uses it anyway.
+
+Given that you cannot predict which components will appear on a page, it is probably wise to give your parameter a more unique name:
+
+```csharp
+public ActionResult Confirmation(int carFunFactID) {
+ 
+    var fact = GetRandomFunFact(carID);
+ 
+    return View(fact);
+}
+```
+
+You should also make sure that your action result is able to cope with a null or empty value.
+
+## What kind of values can I pass between actions?
+
+Just like in regular ASP.NET MVC, you cannot pass complex types -- like complete models -- between actions. `RedirectToRoute` is a redirect, and basically acts as a plain old `HTTP GET` -- with `?carID=434` in the URL.
+
+(Thank you [@HoseyBeast](https://twitter.com/HoseyBeast) for the ASP.NET MVC help.)
+
+<div class="comments">
+
+## Comments (Imported from wordpress)
+
+### sarvesh jain
+
+_August 8, 2016 at 23:58_
+
+I have a rendering which is a form. When the form is submitted I need to validate the model. If the model is invalid then I need to show the form with the error state. If the model is valid then I need to go to a different page.
+
+I can do this in plain asp.net MVC, but I cannot wrap my head around how it will be architected in sitecore?
+
+I tried with a controller rendering and upon post back it just displays the form view. The whole layout and other renderings are gone.
+
+### Martina
+
+_August 9, 2016 at 08:29_
+
+Hello -- Sitecore MVC forms don't behave in quite the same way; have a read of this: [Posting forms in Sitecore MVC (Part 2) – Controller Renderings](posting-forms-in-sitecore-mvc-part-2-controller-renderings)
+
+And also this, which might be closer to the scenario you have: https://ctor.io/posting-forms-in-sitecore-controller-renderings-another-perspective
+
+</div>

@@ -1,0 +1,531 @@
+---
+title: 'Unit testing Sitecore MVC'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: April 30 2014
+tags: [Sitecore, Unit testing, MVC]
+---
+
+ASP.NET MVC and unit testing go hand in hand. The basic MVC architecture forces a separation of concerns that lends itself well to unit testing, and likewise so for the most commonly used patterns (like repositories, unit of work, and business logic 'domains').
+
+## A common scenario in standard ASP.NET MVC
+
+I think that anyone wanting to learn Sitecore MVC should take some time to understand pure ASP.NET MVC as well. It's important to understand where Sitecore does things differently -- and why, and what effect that has.
+
+A common scenario in standard ASP.NET MVC might look like this. A request comes in for `/Sample/Index/30`. This request is routed to a controller first of all:
+
+1.  A **controller** should be light, and is responsible for assembling your **view model** (or just models, to keep things simple). **Models** are dumb classes with no business or data-fetching logic. This layer asks your business logic layer for an object.
+2.  A **business logic** layer (sometimes called a 'domain') is responsible for all your business logic. This retrieves the object from the repository, and does any additional business logic.
+3.  A **repository** is responsible for fetching your data -- there should be no business logic. This layer only returns data from whatever your data source is.
+4.  The **controller**, having put together the model or view model, returns the view. Views are responsible for display, and should contain minimal logic.
+
+Often, **dependency injection** will be used at the root of the application to ensure that no layers are dependent on one another. For example, the controller will not `new` up a concrete implementation of `IBusinessLogic`; it will be injected when the controller is instantiated.
+
+Let's see what this looks like in practice. I've got a controller that is responsible for 'Sample' objects. `/Sample/Index/30` maps to the `Index` action result, and 30 is passed into the `id` parameter:
+
+```csharp
+namespace Simple_MVC.Controllers
+{
+    public class SampleController : Controller
+    {
+        // Inject the dependencies - this controller needs access to the business logic layer
+        private readonly IBusinessLogic _businessLogic;
+        public SampleController(IBusinessLogic businessLogic)
+        {
+            _businessLogic = businessLogic;
+        }
+ 
+        public ActionResult Index(int id)
+        {
+            // Go and fetch the sample object with the specified ID
+            var sample = _businessLogic.GetSample(id);
+ 
+            if (sample == null)
+            {
+                return RedirectToAction("Error");
+            }
+ 
+            return View(sample);
+        }
+ 
+        public ActionResult Error()
+        {
+            return View();
+        }
+    }
+}
+```
+
+-   The concrete implementation for `IBusinessLogic` is injected by **Castle Windsor** when the controller is instantiated -- but you can use any Inversion of Control container
+-   The controller is light -- it is only responsible for putting together my model (with should really be a view model)
+-   The business logic happens in the concrete `IBusinessLogic` -- if I needed to swap my business logic layer, I could just inject something else
+
+The business logic layer I am using is very simple -- it checks that the `ID` coming into the `Index` action is greater than 20:
+
+```csharp
+public class StrictBusinessLogic : IBusinessLogic
+{
+    // Inject the dependencies - this controller needs access to the data-fetching repository layer
+    IRepository _repository;
+    public StrictBusinessLogic(IRepository repository)
+    {
+        _repository = repository;
+    }
+    // Business logic check - ID must be greater than 20. If yes, go and fetch the data.
+    public Sample GetSample(int id)
+    {
+        if (id >= 20)
+        {
+            return _repository.GetSampleObject(id);
+        }
+
+        return null;
+    }
+}
+```
+-   This layer has a dependency on a data-fetching repository layer, which is injected by Castle Windsor.
+-   There is only business logic in this layer -- it has no direct access to the data source (which is usually a database).
+
+```csharp
+public class SampleRepository : IRepository
+    {
+        // Sample repository layer - no business logic
+        public Models.Sample GetSampleObject(int id)
+        {
+            Sample sample = new Sample();
+ 
+            sample.ID = id;
+            sample.Title = "Sample Repository Title";
+            sample.Text = "Sample Repository Text";
+ 
+            return sample;
+        }
+    }
+```
+
+-   The repository returns data -- it contains no business logic.
+-   Usually, ASP.NET MVC is used together with an ORM such as Entity Framework -- the `GetSampleObject` would call an ORM-specific method that retrieves all `Sample` objects that match the specified ID.
+
+## Seems like a lot of layers -- what am I gaining?
+
+First and foremost, the separation of concerns enforced by MVC makes it very testable -- but there are other gains to be had from the modularity of the MVC approach.
+
+### Testability
+
+I can test every part of this implementation individually -- from the controller to the business logic layer. If I want to test the controller behaviour, I can either mock the `IBusinessLogic` dependency or create an instance of it as a concrete implementation (which would in turn require a fake implementation of `IRepository`).
+
+In the unit test example below, the Moq library has been used to fake the `IBusinessLogic` layer:
+
+```csharp
+[TestMethod]
+public void ControllerRedirectsToError()
+{
+    var businessLogicFake = new Mock<IBusinessLogic>();
+ 
+    businessLogicFake.Setup(x => x.GetSample(3)).Returns((Sample)null);
+          
+    var controller = new SampleController(businessLogicFake.Object);
+ 
+    var result = controller.Index(3) as RedirectToRouteResult;
+ 
+    Assert.IsTrue(result.RouteValues.ContainsKey("action"));
+ 
+    Assert.AreEqual("Error", result.RouteValues["action"].ToString());
+}
+```
+
+Or, if you do not want to use a mocking library:
+
+```csharp
+[TestMethod]
+public void ControllerRedirectsToError_WithoutMocking()
+{
+    // A fake data access layer - no depenency on a database
+    var repository = new SampleRepository();
+ 
+    var businessLogicFake = new StrictBusinessLogic(repository);
+ 
+    var controller = new SampleController(businessLogicFake);
+ 
+    var result = controller.Index(3) as RedirectToRouteResult;
+ 
+    Assert.IsTrue(result.RouteValues.ContainsKey("action"));
+ 
+    Assert.AreEqual("Error", result.RouteValues["action"].ToString());
+}
+```
+
+*Note!* This post is not about unit testing best practices; be gentle when assessing the 'usefulness' of these tests, or how well they are written. 🙂
+
+### But there's more!
+
+If a particular section is under construction or with another team, I can inject a fake, temporary piece to fill that dependency whilst they are working. When that piece is complete, I inject the completed code.
+
+In addition, I know that each layer has a very particular responsibility. As a developer, I know exactly where I have to go for a particular problem -- is something going wrong with my special offers calculation? Check business logic layer first. Is there a problem with the appearance of the page? Check the view.
+
+## Back to Sitecore
+
+Sitecore will not stop you from structuring your application in the manner detailed above if you are using controller renderings. In fact, that entire code sample *could almost be* a controller rendering -- you can use dependency injection and you can move your business logic into a separate layer.
+
+On the controller rendering vs view rendering debate, I can only say this -- if I need to do something complicated that requires business logic of any kind, I use a controller rendering. If I need to render some field data, I use a view rendering. Views should contain minimal logic, so I am quite happy to leave those untested.
+
+OK -- then what exactly is stopping me from unit testing Sitecore?
+-----------------------------------------------------------------
+
+Have a look at this very simple controller:
+
+```csharp
+
+
+The controller above takes a `RenderingContext` object. Unfortunately `RenderingContext` does not have an interface, so you cannot inject the concrete implementation. If a a `RenderingContext` is not provided, the empty constructor will fire with a default -- `RenderingContext.Current`, which relies on Sitecore. This isn't true dependency injection (dependency injection should be done in the root of your application by your IoC container), but it allows us to test.
+public class CircuitController : Controller
+    {
+        RenderingContext _renderingContext;
+        public CircuitController(RenderingContext renderingContext)
+        { 
+             _renderingContext = renderingContext;        
+        }
+ 
+        public CircuitController() : this(RenderingContext.Current)
+        {
+        }
+ 
+        public ActionResult Featured()
+        {            
+            Circuit circuit = new Circuit();
+ 
+            circuit.Initialize(_renderingContext);
+ 
+            return View(circuit);
+        }
+    }
+}
+```
+So far so good -- the empty constructor will work in a *Sitecore* context (when `RenderingContext.Current` is available), and I can pass in my own `RenderingContext` object in testing.
+
+Let's try writing a test. The test won't actually do anything -- but it should still run:
+
+```csharp
+[TestMethod]
+public void CircuitControllerTest_WillNeverWork()
+{
+    CircuitController circuitController = new CircuitController( … );
+ 
+    var result = circuitController.Featured();
+}
+```
+
+The `CircuitController` needs a `RenderingContext`; if one isn't provided, it will try to access Sitecore -- which we cannot do in the context of a test. Can I mock one? At first glance, yes, but the `Current` property required by my controller is `static`, and it only has a getter.
+
+Can I create my own version from an interface? No, we've just said it doesn't have one.
+
+So... what do I do? Exactly.
+
+You will come across issues like this every time you touch the Sitecore API -- the `Item` is dependent on receiving a `Database`, and that in turn has a dependency on a configuration file. There are static classes everywhere, and precious few interfaces.
+
+But before we lose ourselves in complaining, it is worth remembering that Sitecore is no longer a fresh, greenfield baby -- the company is *thirteen years old* this year, and so is the codebase. The newer parts of the API (notably search) are full of interfaces, and are very testable.
+
+There are also ways to get around the problems we've just encountered.
+
+## Wrap and isolate
+
+> Unit testing Sitecore is an exercise in isolation.
+
+If Sitecore makes our application difficult to test, move any references to the API out of your controllers and business logic, and wrap any classes (like `Item`) that you do need to use. Let's start with wrapping.
+
+### Wrapping Sitecore classes
+
+Have a look at this example:
+
+```csharp
+public class LocationController : Controller
+{
+    private readonly ILocationDomain _locationDomain;
+    private readonly IPageContext _pageContext;
+    private readonly IRenderingContext _renderingContext;
+    public LocationController(ILocationDomain locationDomain, IPageContext pageContext, IRenderingContext renderingContext)
+    {
+        _locationDomain = locationDomain;
+        _pageContext = pageContext;
+        _renderingContext = renderingContext;
+    }
+ 
+    public ActionResult Featured()
+    {
+        LocationViewModel viewModel = new LocationViewModel();
+ 
+        viewModel.Location = _locationDomain.GetLocation(_renderingContext.Rendering.Item);
+ 
+        if (viewModel.Location == null)
+        {
+            if (_pageContext.IsPageEditor)
+            {
+                return View("~/Views/Shared/_NoDatasource.cshtml");
+            }
+ 
+            return new EmptyResult();
+        }
+ 
+        return View(viewModel);
+    }
+}
+```
+
+This is a controller rendering for a featured location. We are injecting our business logic (`ILocationDomain`), but we are also injecting something called an `IPageContext` and an `IRenderingContext`. Are those Sitecore interfaces?
+
+No -- those are interfaces I have created myself. Let's take the `IPageContext` as an example:
+
+```csharp
+public interface IPageContext
+    {
+        IItem Current { get; }
+        bool IsPageEditor { get; }
+    }
+```
+
+And here is a concrete implementation:
+
+```csharp
+public class PageContextWrapper : IPageContext
+    {
+        public IItem Current
+        {
+            get
+            {
+                return new ItemWrapper(PageContext.CurrentOrNull.Item);
+            }
+        }
+ 
+        public bool IsPageEditor
+        {
+            get
+            {
+                return Sitecore.Context.PageMode.IsPageEditor;
+            }
+        }
+    }
+```
+
+You'll notice that an `IItem` interface is referenced -- that is also one of mine:
+
+```csharp
+public interface IItem
+    {
+        string DisplayName { get; }
+        ID TemplateID { get; }
+        Item Item { get; set; }
+    }
+```
+
+The concrete implementation looks like this:
+
+```csharp
+public class ItemWrapper : IItem
+    {
+        public ItemWrapper(Item item)
+        {
+            Item = item;
+        }
+ 
+        public ItemWrapper()
+        {
+        }
+ 
+        public Item Item { get; set; }
+ 
+        public string DisplayName
+        {
+            get
+            {
+                return Item.DisplayName;
+            }
+        }
+ 
+        public ID TemplateID
+        {
+            get
+            {
+                return Item.TemplateID;
+            }
+        }
+    }
+```
+
+My code will never call the Sitecore API directly. It will *always* go via these wrappers. Take this line from the controller as an example:
+
+```csharp
+if (_pageContext.IsPageEditor)
+```
+
+In a Sitecore context, that will hit `Sitecore.Context.PageMode.IsPageEditor` and return true or false depending on whether or not we are in the Page Editor. *However*, if I wanted to test my controller, I could create a *fake* implementation of `IPageContext` -- or mock that interface. The unit testing code will never hit the Sitecore API, and therefore does not have a dependency on it.
+
+My `IRenderingContext` is passed on to the business layer, which similarly does not touch the Sitecore API -- in addition, any calls that layers needs to make to methods such as `FieldRenderer.Render()` are safely tucked away in a Sitecore-specific repository, and injected.
+
+You will find yourself having to do quite a lot of wrapping. In the sample project, I have an entire folder of wrappers -- `Item`, `PageContext`, `Rendering`, and so on -- but it does mean that you can perform a true unit test.
+
+### Isolating the Sitecore API
+
+In addition to wrapping Sitecore classes, you can also isolate the Sitecore API away from your code by putting it in a repository. For example -- in my business logic layer, I want to do some checks before returning the featured location that my controller is requesting. Remember -- there should be no data-fetching in this layer at all (and in this instance, our 'database' is Sitecore).
+
+My business logic layer injects a data-fetching repository:
+
+```csharp
+public class LocationDomain : MVC.Data.Domain.ILocationDomain
+    {
+        private readonly ISitecoreRepository _sitecoreRepository; 
+        public LocationDomain(ISitecoreRepository sitecoreRepository)
+        {
+            _sitecoreRepository = sitecoreRepository;
+        }
+    }
+```
+
+All and any Sitecore API calls go in this repository -- and because it is injected, I can inject a fake one during testing. Let's have a look at where the repository is used within the business logic layer. The method below is responsible for returning a `Location`:
+
+```csharp
+public Location GetLocation(IItem item, Dictionary<string, string> parametersDictionary)
+{
+    Location location = null;
+        
+    if (item != null)
+    {
+            if (item.TemplateID == References.LocationTemplateID)
+            {
+                location = new Location();
+
+                location.Title = new System.Web.HtmlString(GetField("Name", item, parametersDictionary));
+                location.Text = new System.Web.HtmlString(GetField("Text", item, parametersDictionary));
+
+                return location;
+            }
+        }
+        
+    return null;
+}
+```
+
+It checks if the incoming item's `TemplateID` is correct. If yes, it goes on to create a `Location`, and populates each property with a `GetField()` method that takes a field name and an 'item' (which is actually a wrapper class).
+
+Inside the `GetField()` method, we have our first reference to the repository:
+
+```csharp
+public string GetField(string fieldName, IItem item, Dictionary<string, string> parameters)
+{
+    if (item != null)
+    {
+        if (!String.IsNullOrEmpty(fieldName))
+        {
+            if (_sitecoreRepository.FieldExists(fieldName, item))
+            {
+                string fieldParameters = GetFieldParameters(fieldName, parameters);
+
+                if (!String.IsNullOrEmpty(fieldParameters))
+                {
+                    return _sitecoreRepository.GetFieldValue(fieldName, item, fieldParameters);
+                }
+                else
+                {
+                    return _sitecoreRepository.GetFieldValue(fieldName, item);
+                }
+            }
+        }         
+    }
+
+    return String.Empty;
+}
+```
+
+Not once do we touch the Sitecore API. Every call -- including the check to see if a field exists -- is done using the repository. The Sitecore implementation of `GetFieldValue` contains minimal code and no business logic:
+
+```csharp
+public class SitecoreRepository : ISitecoreRepository
+{
+    public string GetFieldValue(string fieldName, IItem item, string parameters)
+    {
+        return FieldRenderer.Render(item.Item, fieldName, parameters);
+    }
+}
+```
+
+With Sitecore classes wrapped and Sitecore methods isolated, I no longer have a dependency on Sitecore. In my unit tests, the Sitecore-specific implementations of wrappers can be swapped out for fake ones, as can the Sitecore repository.
+
+Here is a controller unit test (which uses mocking of my own wrapper interfaces). It should return 'null' if the business layer does not return a valid `Location`:
+
+```csharp
+[TestMethod]
+public void LocationControllerTest_ReturnsEmptyIfNoLocation()
+{
+    var repository = Mock.Of<ISitecoreRepository>();
+    var pageContext = Mock.Of<IPageContext>();
+ 
+    var rendering = Mock.Of<IRenderingWrapper>();
+ 
+    var renderingContext = Mock.Of<IRenderingContext>(rc => rc.Rendering == rendering);
+ 
+    LocationDomain domain = new LocationDomain(repository);
+ 
+    LocationController locationController = new LocationController(domain, pageContext, renderingContext);
+ 
+    var result = locationController.Featured();
+ 
+    Assert.AreEqual("EmptyResult", result.GetType().Name);
+}
+```
+
+Here is a business layer unit test. It should return null if an item does not have the correct template:
+
+```csharp
+[TestMethod()]
+public void GetLocation_NullTemplate()
+{
+    var item = Mock.Of<IItem>();
+
+    var repository = Mock.Of<FakeRepository>();
+
+    var domain = new LocationDomain(repository);
+
+    var location = domain.GetLocation(item);
+
+    Assert.IsNull(location);
+}
+```
+
+`LocationDomain` has a dependency on IRepository, so I am injecting a fake repository instead of the one that contains calls to Sitecore.
+
+## Are there any other options?
+
+You do have to take unit testing into account at the very beginning of your Sitecore project. However -- you have to take unit testing into account at the beginning of *any* MVC project, because it directly affects how you structure your code.
+
+There are other ways to unit test Sitecore, including but not limited to:
+
+-   TypeMock, or any other mocking framework that can mock static classes -- the free Moq cannot, as far as I'm aware.
+-   Use an ORM like [Glass](http://glass.lu/) on top of Sitecore.
+-   Use something like [Sitecore Fakes*](https://github.com/istern/Sitecore-Fakes), which does something similar to what has been described above.
+-   Any other 'wrap and isolate' methods you can think of
+
+## Resources
+
+You can see the complete code sample for the LocationController et al on GitHub: https://github.com/Sitecore-Community/sample-sitecore-mvc
+
+<div class="comments">
+
+## Comments (Imported from wordpress)
+
+### Pingback: [Posting forms in Sitecore MVC (Part 2) -- Controller Renderings | (MH) Welander](https://mhwelander.net/2014/05/30/posting-forms-in-sitecore-mvc-part-2-controller-renderings/)
+
+### Emad
+
+_September 25, 2017 at 19:16_
+
+Can anyone please possibly answer my question related to these concepts on: https://stackoverflow.com/questions/46409352/how-to-unit-test-a-glasscontroller-action-without-sitecorecontext-dependency-inj
+
+Thanks!
+
+### Pingback: [An example of unit testing with Sitecore -- João Neto's blog](http://joaoneto.blog/2018/11/01/an-example-of-unit-testing-with-sitecore/)
+
+### [Cody G](https://www.codygarrett.com/)
+
+_February 19, 2023 at 00:40_
+
+Inteeresting read
+
+</div>

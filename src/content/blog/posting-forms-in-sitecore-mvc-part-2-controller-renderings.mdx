@@ -1,0 +1,244 @@
+---
+title: 'Posting forms in Sitecore MVC (Part 2) – Controller Renderings'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'May 30 2014'
+tags: [Sitecore, MVC]
+---
+
+In [part 1, I explained how to post a form from a view renderings](../posting-forms-in-sitecore-mvc-part-1-view-renderings/). In part 2, we will replicate this scenario with a controller rendering.
+
+Let's re-use the example we are already familiar with.
+
+## The model
+
+We'll use exactly the same view model as before -- but because we are no longer relying on the Sitecore MVC pipeline to populate our model, there is no need to inherit from `RenderingModel` or implement `IRenderingModel`:
+
+```csharp
+public class CarViewModel {
+    public string CarName { get; set; }
+    public string CarManufactureYear { get; set; }
+}
+```
+
+## The controller action for rendering the form
+
+In our controller rendering, we want to retrieve a person's current vehicle and output it to a view that contains a form. To do this, create a controller rendering called Edit Car and map it to the `EditCar` action in the `CarController` -- for more information about how to create controller renderings, [have a look at the Sitecore MVC videos](https://mhwelander.net/sitecore-mvc-videos/ "Sitecore MVC").
+
+Our controller rendering action will look like this:
+
+```csharp
+public ActionResult EditCar() {
+    var car = _repository.GetYourCar(id);
+    return View(car);
+}
+```
+
+(Once again, I am assuming that an injected repository is available to retrieve the car. To find out more about using a testable repository pattern with Sitecore, [have a look at this unit testing post](unit-testing-sitecore-mvc/).)
+
+The view that we return looks very similar to the one used by the view rendering example in part 1 -- with one crucial difference: **we are explicitly declaring the controller and action to post to. We did not have to do this in the view rendering**; it picked up those values from the component definition item.
+
+```razor
+@model CarViewModel
+  
+@using (Html.BeginRouteForm(Sitecore.Mvc.Configuration.MvcSettings.SitecoreRouteName, FormMethod.Post))
+{       
+    @Html.Sitecore().FormHandler("Car", "EditCar") 
+    @Html.LabelFor(x => x.CarName)    
+    @Html.EditorFor(x => x.CarName)
+  
+    @Html.LabelFor(x => x.CarManufactureYear)
+    @Html.EditorFor(x => x.CarManufactureYear)
+  
+    <input type="submit" />
+}
+```
+
+## The controller action for posting the form
+
+You can *either* create a completely separate action to post to (for example `PostEditCar` to complement `EditCar`, or create a version of `EditCar` marked with the `HttpPost` verb that accepts the view's model:
+
+```csharp
+[HttpPost]
+public ActionResult EditCar(CarViewModel viewModel)
+{
+     // Do your saving here
+     // Redirect to another Sitecore page
+}
+```
+
+Edit (11/06/2014): Notice that in this particular example, I am redirecting to another Sitecore page immediately after saving. However, if your form fails validation, you will want to return the same view again. This will not work if you are using Sitecore's form handler (`@Html.FormHandler("ControllerName", "ActionName")`); using `return View` will interrupt Sitecore's page load and return that view *only*.
+
+You can, however, post back to the same page (and `return View()`) using an empty, standard `@Html.BeginForm()`. [Kevin Brechbühl explains how to do this](http://ctor.io/posting-forms-in-sitecore-controller-renderings-another-perspective/) (including one of several solutions for handling multiple forms on a page). You do have to code defensively against the possibility of multiple forms on a page, as they will *all* post back no matter which one was submitted.
+
+Personally, I prefer doing an AJAX post to a custom route wherever possible.
+
+## A summary of strange behaviour
+
+This section is mostly for fun, and covers the strange things that happen when you post back controller renderings. You can [read about a similar experience here](http://www.experimentsincode.com/?p=425).
+
+### What happens if I use the standard MVC @Html.BeginForm()?
+
+If you post a controller rendering form with `@Html.BeginForm()` (without specifying a controller and action), it will post back the entire page. ALL controller renderings will be posted -- if they have an `HttpPost` version, that will be posted, otherwise the unmarked action will run. For example, I had a page with six controller rendering -- one form and five that output content -- each one would be executed when I submitted the form.
+
+Furthermore, if you were to mark your five 'content only' controller rendering actions with `HttpGet`, Sitecore would throw an error and complain that it cannot find an action that permits a post. It either needs an unmarked action OR an action with `HttpPost`.
+
+* **Pros:** Looks close to the standard ASP.NET MVC way of doing things, allows you to validate your form as normal, allows you to `return View()` without\
+* **Cons:** Posts back every `HttpPost` or unmarked action on the page (problem for multiple forms on a page)
+
+### What happens if I use @Html.BeginForm(), but specify the controller and action?
+
+I tried to use `@Html.BeginForm("MyAction", "MyController")` -- it does only execute the specified action, but no Sitecore context information -- such as `PageContext.Current.Item` or `RenderingContext.Current.Rendering` -- is available to me at this point; presumably because I have bypassed the `httpRequest` pipeline by calling a route directly.
+
+It is also not possible to `return View()`; you are not allowing the Sitecore page to render and will only see that view.
+
+### Can I return base.Index() or trigger Sitecore's page rendering pipeline myself?
+
+[In part 1, I told you that you can trigger Sitecore's page rendering process by inheriting from `SitecoreController` and returning `base.Index()`](posting-forms-in-sitecore-mvc-part-1-view-renderings). Why can't you do this in a controller rendering? A controller rendering executes much later in page life cycle than a true 'controller'. By the time your `[HttpPost]` action executes, the page is already partially loaded. I noticed returning `base.Index()` resulted in an infinite loop -- my action executed, tried to start the Sitecore page load again, found my controller rendering, my action executed, tried to start the Sitecore page load again.. and so on until 503 and eventual application pool death.
+
+(Remember that Sitecore MVC is *an implementation* of ASP.NET MVC with slightly different requirements, and cannot always act exactly as normal ASP.NET MVC)
+
+## In summary
+
+Posting forms with a controller rendering is a little more tricky than view renderings. If you need to post back rather than redirect, remember to account for multiple forms on a page.
+
+<div class="comments">
+
+## Comments (Imported from wordpress)
+
+### aquasonic
+
+_June 4, 2014 at 10:35_
+
+Hi Martina,
+
+thanks for this blog post. In the post action you write in a comment, that we should redirect to another Sitecore page. How do you handle validation errors then? If the ModelState contains errors then I would usally want to return the same view as before. But when I'm doing this, it results in a "layout-less" output (I only get the html markup of the posted view, but no layout etc.). I could solve this issue with a custom attribute on the post-action (like described in the link you've posted under the strange behaviours), what's wrong with this solution? This way I also don't have to add the FormHandler and can use the default BeginForm.
+
+Thanks for feedback and regards,
+Kevin
+
+### Martina
+
+_June 9, 2014 at 08:51_
+
+Hi Kevin -- thank you for your comment; you're right, I didn't think to mention validation. I'll edit it into the view rendering blog post and write a separate one for controller rendering forms (the question has been raised a couple of times this week).
+
+There is nothing technically wrong with the solution. I think it's probably the best you can hope for with controller renderings because they are executed so late in the request life cycle. I am just not a fan of every rendering on the page executing whenever you post a form (perhaps you could do a global filter that checks the originating rendering ID, so you don't have to remember to add it to every controller rendering post action) and would prefer to use an AJAX form instead (or a view rendering).
+
+I will ask around and see what the general trend is.
+
+### [Kevin Brechbühl](http://ctor.io/)
+
+_June 10, 2014 at 09:43_
+
+Hi Martina,
+
+thanks for your answer. I've implemented a custom attribute with a custom form handler and hidden fields. So far I like this solution, because it's very near to standard ASP.NET MVC. All other approaches are a bit different to implement like standard ASP.NET MVC. I'm looking forward to your ideas and solutions 🙂
+
+Regards,
+Kevin
+
+### aquasonic
+
+_June 10, 2014 at 09:44_
+
+Hi Martina,
+
+thanks for your answer. I've implemented a custom attribute with a custom form handler and hidden fields. So far I like this solution, because it's very near to standard ASP.NET MVC. All other approaches are a bit different to implement like standard ASP.NET MVC. I'm looking forward to your ideas and solutions 🙂
+
+Regards,
+Kevin
+
+### Pingback: [Posting forms in Sitecore MVC (Part 1) -- View Renderings | (MH) Welander](https://mhwelander.net/2014/05/28/posting-forms-in-sitecore-mvc-part-1-view-renderings/) 
+
+### Martina
+
+_June 10, 2014 at 10:08_
+
+Hi Kevin --
+
+No problemo! I did a bit of asking around, and the majority of those asked rely on AJAX posts or view rendering posts. There are additional side-effects to controller rendering posts -- if you use TempData, you will find that you can't access it from a controller rendering in the usual way. I always approach controller renderings with a little bit of suspicion, but they definitely feel more 'ASP.NET MVC' and I use them whenever I have to do anything more complicated than outputting content.
+
+Regards,
+Martina
+
+### aquasonic
+
+_June 10, 2014 at 15:32_
+
+Hi Martina,
+
+I see. I'm trying to avoid TempData, ViewData and ViewBag whenever possible, I more like strongly-typed models. I think I gonna also write a blog post, how we integrated the controller rendering posts (if you won't cover this way in you following post :)).
+
+Thanks again,
+Kevin
+
+### Martina
+
+_June 10, 2014 at 15:36_
+
+Agreed; I have exactly one scenario where I would use TempData -- view models all the way. 🙂
+
+Do it! The more perspectives out there on Sitecore MVC the better.
+
+### Sindhu
+
+_August 29, 2014 at 23:16_
+
+Hi Kevin,
+
+I face the similar issue when i use form handler for controller rendering,where no layout details are attached to the view.
+
+Can you please tell me how did you resolve the issue?
+
+If possible,can you share the sample code like how to overcome with that problem?
+
+Moreover,when i try to navigate from one controller rendering to another rendering via sitecore internal link field type. Again it throws an error stating the controller path is not correct.
+
+Can you please help me in resolving this issue?
+
+### [Kevin](http://ctor.io/)*
+
+_September 3, 2014 at 04:40_
+
+HI Sindhu,
+
+I wrote a blog post about how I solved this problem (with sample code) here: http://ctor.io/posting-forms-in-sitecore-controller-renderings-another-perspective/ Hope that helps you solve the problem 🙂
+
+The other issue you have I'm not sure if I understand this correctly. What do you mean with navigating from one "rendering" to another "rendering" by an internal link? Internal link always points to an item and not to a rendering. The item then contains several renderings attached within the "Presentation Details". So what you could do is to add an internal link within your rendering, pointing to another item (but not to another rendering). If this does not solve your problem, I would suggest you to create a new question in the SDN forum on [http://sdn.sitecore.net](http://sdn.sitecore.net/) with the code you already have.
+
+Hope I could help you.
+
+Greets,
+Kevin
+
+### Pingback: [Form Post in Sitecore MVC | cprakash](http://cprakash.com/2014/11/03/form-post-in-sitecore-mvc/)
+
+### Pingback: [WFFM MVC: Buyer Beware | Jocks to the Core](http://jockstothecore.com/wffm-mvc-buyer-beware/)
+
+### Pingback: [WFFM MVC: Implementation Tips | Jocks to the Core](http://jockstothecore.com/wffm-mvc-implementation-tips/)
+
+### Pingback: [Sitecore MVC -- Multiple Forms | Horizontal Integration](http://blog.horizontalintegration.com/2015/09/25/sitecore-mvc-multiple-forms/)
+
+### e
+
+_January 12, 2016 at 09:50_
+
+Hi Martina. I am not seeing the behaviour your describe on my page. My page has two forms. I have a couple of controller renderings, where two of them have a HttpPost action -- the remaining actions are unmarked. Using @Html.BeginForm() will indeed post back the entire page, but the two HttpPost actions are not invoked -- instead all the unmarked actions are invoked. Do you have any idea why this is? Actually I am trying to implement the solution found on Kevins blog, and have posted a question there as well, but the problem seems to be more fundamental, as the HttpPost actions are not invoked at all.
+
+### namgniw
+
+_August 23, 2016 at 11:59_
+
+Hello, this post is really helpful but i'm having problems with adding attachment to the form.
+
+I have a Controller Rendering that his the form, and inside the form a placeholder to be able to add the "attachment" component to it, different types of attachments
+
+I was trying to submit form by ajax, it works for the fields but the attachments doesn't work well because if i add the enctype or contentType: false, processData: false
+
+It doesn't call the ajax , i also tried with 2 different ajax calls to store in TempData with some tag associated to the form but it's not calling.
+
+Other sittuation is that the website if i return to the same form because model isn't valid, it crash in the placeholder
+
+### Pingback: [Sitecore MVC -- Multiple Forms -- Blog](http://wp-blog-dev.horizontalintegration.com/2015/09/25/sitecore-mvc-multiple-forms/)
+
+</div>

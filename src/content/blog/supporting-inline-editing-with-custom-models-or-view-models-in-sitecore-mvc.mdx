@@ -1,0 +1,77 @@
+---
+title: 'Supporting inline editing with custom models (or view models) in Sitecore MVC'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'April 17 2014'
+tags: [Sitecore]
+---
+
+The following post will explain how to support inline editing with a custom model in Sitecore MVC. Note that this particular example does not take testing into account -- data-fetching (specifically, `FieldRenderer.Render()`) will be used directly in the model, which is not necessarily good ASP.NET MVC practice.
+
+If you are setting up Sitecore MVC to work with custom models, you might have something like this:
+
+```csharp
+public class Car {
+       public Item Item { get; set; }
+       public string Name { get; set; }
+}
+```
+
+At some point, that property is populated with data from Sitecore -- whether that's directly in the property `get`, or from a data repository.
+
+If you want Page Editor support, you will eventually have to go through the Sitecore FieldRenderer pipeline. If we hardcode data-fetching into the model, it will look something like this:
+
+```csharp
+public class Car {
+       public Item Item { get; set; }
+       public string Name { get
+        {
+            return FieldRenderer.Render("Name", this.Item)
+        }
+    }
+}
+```
+
+However, if you render `@Model.Name` out to a view and switch to Page Editor mode, the additional HTML that the `FieldRenderer.Render()` pipeline outputs will be escaped.
+
+To solve this, return the model properties that you wish to be editable as `HtmlString`. It may be that your actual model class only contains the raw value version of fields, and properties that need to be rendered are stored in a view model.
+
+Model with raw values:
+
+```csharp
+public class Car {
+       public Item Item { get; set; }
+       public string RawName { get
+        {
+            return Item.Fields["Name", Item];
+        }
+    }
+}
+```
+
+View model with rendered values:
+
+```csharp
+public class CarViewModel {
+       public Item Item { get; set; }
+       public HtmlString RenderedName { get
+        {
+            return FieldRenderer.Render("Name", this.Item)
+        }
+    }
+}
+```
+
+Doing it this way means that any data manipulating (such as posting a form) can be done using the model raw values, and the rendered value can be tailored to the view where it is being used. For example, `FeaturedCarViewModel` might output exactly the same data as `CarViewModel`, but requires slightly different field parameters:
+
+```csharp
+public class FeaturedCarViewModel {
+       public Item Item { get; set; }
+       public HtmlString RenderedName { get
+        {
+            return FieldRenderer.Render("Name", this.Item, "disable-web-editing=true")
+        }
+    }
+}
+```
+
+By doing it this way, any information about how a field should be displayed is confined to view model rather than the model, which should just contain data.

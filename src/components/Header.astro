@@ -5,7 +5,7 @@ import { SITE_TITLE } from '../consts';
 
 <header>
 	<nav>
-		<h2 class="siteTitle"><a href="/">{SITE_TITLE}</a></h2>
+		<h2 class="siteTitle"><a href="/">{SITE_TITLE} <span>♥</span>	</a></h2>
 		<div class="internal-links">
 			<HeaderLink href="/">Home</HeaderLink>
 			<HeaderLink href="/blog">Blog</HeaderLink>
@@ -34,6 +34,11 @@ import { SITE_TITLE } from '../consts';
 	h2 a.active {
 		text-decoration: none;
 	}
+
+	h2 a span {
+		color: var(--pink);
+	}
+
 	nav {
 		display: flex;
 		align-items: center;
