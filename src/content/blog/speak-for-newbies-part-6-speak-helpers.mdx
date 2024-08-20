@@ -1,0 +1,185 @@
+---
+title: 'SPEAK for Newbies – Part 6: SPEAK Helpers'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'July 8 2014'
+tags: [Sitecore, SPEAK]
+---
+
+The main SPEAK .js file contains a lot of very useful helpers that you can use in your own applications and components. To remind you, the **PageCode** component uses `require.js` to load in a bunch of scripts. The Sitecore .js file is highlighted below.
+
+```js
+(function (global) {
+  require.config({
+    baseUrl: "/sitecore/shell/client/Speak/Assets",
+    paths: {
+      jquery: "lib/core/deps/jQuery/jquery-1.10.2",
+      underscore: "lib/core/deps/underscore/underscore.1.4.4",
+      knockout: "lib/core/deps/ko/knockout-2.2.1",
+      backbone: "lib/core/deps/backbone/backbone.1.0.0",
+      sitecore: "lib/core/sitecore-1.0.2",
+      sitecorify: "css/sitecorify",
+      bootstrap: "lib/ui/bootstrap",    
+      jqueryui: "lib/ui/deps/jQueryUI/jquery-ui-1.10.1.custom",
+      dynatree: "lib/ui/deps/DynaTree/jquery.dynatree-1.2.4",
+      dynatreecss: "lib/ui/deps/DynaTree/skin-vista/ui.dynatree"
+    },
+    shim: {
+      'jquery': { exports: 'jQuery' },
+      'jqueryui': { deps: ['jquery'] },
+      'underscore': { exports: '_' },
+      'knockout': { deps: ['underscore'], exports: 'ko' },
+      'backbone': { deps: ['jquery', 'underscore'], exports: 'Backbone' },
+      'sitecore': { deps: ['backbone', 'knockout'], exports: 'Sitecore' },
+      'dynatree': { deps: ['jqueryui'/*, 'css!dynatreecss'*/] }
+    },
+    map: {
+      '*': {
+        'css': 'lib/core/deps/css'
+      }
+    }
+  });
+ 
+  require(["sitecore"], function (_sc) {
+    _sc.load(global);
+  });
+})(this);
+```
+
+The `sitecore` module is used by all page code (and presumably all components). To remind you, here is the first line of my page code from part 5:
+
+```js
+define(["sitecore", "jquery"], function (Sitecore, jQuery) {
+```
+
+As you can see, the `sitecore` module is injected into the function as `Sitecore` (you could just as easily have called it _sc, sc, scspeak). It’s this magical object that will give you access to a bunch of really useful helpers. Let’s have a look at what’s available (from somewhere in the depths of sitecore-1.0.2.js):
+
+```js
+_.extend(_sc, {
+  Helpers: {
+    url: urlHelper,
+    date: dateHelper,
+    id: idHelper,
+    string: stringHelper,
+    object: objectHelper,
+    invocation: invocationHelper,
+    overlay: overlayHelper,
+    window: windowHelper
+  }
+});
+ 
+_sc.Helpers.window.init();
+```
+
+You can use the helpers in your own application. Below is a list of some of the helpers (I isolated the ones I felt were most useful):
+
+## `Sitecore.Helpers.url`
+           
+### `combine`
+
+Combine two 'URL’ strings – will put a leading / in front of everything, so shouldn’t be used with domains.
+
+```js
+var combined = Sitecore.Helpers.url.combine('/my/path/to/something/', 'else');
+```
+
+### `isParameterNameAlreadyInUrl`	
+
+```js
+var url = "http://www.mhwelander.net/?isSwedish=true;
+var isInUrl = Sitecore.Helpers.url.isParameterNameAlreadyInUrl(url, 'isSwedish');
+```
+
+### `addQueryParameters`	
+
+```js
+var originalUrl = "https://mhwelander.net/";
+var processedUrl = Sitecore.Helpers.url.addQueryParameters(originalUrl, {
+    isSwedish: true
+  });
+```
+
+### `getQueryParameters`
+
+```js
+var parameter = Sitecore.Helpers.url.getQueryParameters(window.location.href)['parametername'];
+```
+
+## `Sitecore.Helpers.id`
+
+### `isId`
+
+The following will return true:
+
+```js
+var isId = Sitecore.Helpers.id.isId('{EDF76D4D-E94B-4BAA-8CC7-AADCBB33092E}');
+```
+
+### `toId`
+
+This accepts a string formatted as a short ID, which is basically a GUID without the '{', '}’, and '-' characters:
+
+```js
+var isId = Sitecore.Helpers.id.toId('EDF76D4DE94B4BAA8CC7AADCBB33092E');
+```
+
+### `toShortId`
+
+This accepts a string formatted as a GUID:
+
+```js
+var isId = Sitecore.Helpers.id.toShortId('{EDF76D4D-E94B-4BAA-8CC7-AADCBB33092E}');
+```
+
+## `Sitecore.Helpers.string`
+
+### `endsWith`
+
+The following returns true:
+
+```js
+var endsWithWelander = Sitecore.Helpers.string.endsWith('Martina Welander', 'Welander');
+```
+
+### `equals`
+
+The following returns true(not case sensitive):
+
+```js
+var equalsMartinaWelander = Sitecore.Helpers.string.equals('Martina Welander', 'Martina Welander');
+```
+
+### `format`	
+
+Works a bit like `String.Format` – use sparingly:
+
+```js
+var formattedString = Sitecore.Helpers.string.format('{0}, {1}', 'Welander', 'Martina');
+```
+
+## `Sitecore.Helpers.object`
+
+### `getOwnProperties`
+
+The following returns an array of properties:
+
+```js
+var person = { name: 'Martina Welander', nationality: 'Swedish', occupation: 'SPEAK minion' };
+var arrayOfProperties = Sitecore.Helpers.object.getOwnProperties(person);
+```
+
+There are others – you can test them all out by using your browser’s developer tools. The main application is available as `_sc` in your browser console.
+
+<div class="comments">
+
+## Comments (Imported from wordpress)
+
+### bahan gorden rumah sakit
+
+_November 6, 2019 at 05:34_
+
+I blog often аnd I genuinely thɑnk you for уour content.
+
+Thіs great article has truly peaked mу intеrest. I am gοing to taкe ɑ note of y᧐ur blog and keeρ checking fоr new informɑtion ɑbout once a
+weeқ. I opted in for yօur RSS feed аs welⅼ.
+
+</div>
