@@ -1,0 +1,55 @@
+---
+title: 'Tracker.Current is not initialized'
+description: 'Lorem ipsum dolor sit amet'
+pubDate: 'Aug 26 2016'
+tags: [Sitecore]
+---
+
+I am writing this for the benefit of anyone else who, like me, goes to Google before checking their logs!
+
+When I switched shared session state to OutProc (using the MongoDB provider), I got the following error:
+
+```
+Tracker.Current is not initialized
+
+Description: An unhandled exception occurred during the execution of the current web request. Please review the stack trace for more information about the error and where it originated in the code. 
+
+Exception Details: System.InvalidOperationException: Tracker.Current is not initialized
+
+Source Error: 
+
+An unhandled exception was generated during the execution of the current web request. Information regarding the origin and location of the exception can be identified using the exception stack trace below.
+
+Stack Trace: 
+
+[InvalidOperationException: Tracker.Current is not initialized]
+   Sitecore.Analytics.Pipelines.StartAnalytics.StartTracking.Process(PipelineArgs args) +304
+   (Object , Object[] ) +74
+   Sitecore.Pipelines.CorePipeline.Run(PipelineArgs args) +484
+   Sitecore.Analytics.Pipelines.StartAnalytics.StartAnalyticsPipeline.Run() +293
+   Sitecore.Mvc.Analytics.Pipelines.MvcEvents.RequestBegin.StartTracking.Process(RequestBeginArgs args) +139
+   (Object , Object[] ) +74
+   Sitecore.Pipelines.CorePipeline.Run(PipelineArgs args) +484
+   Sitecore.Mvc.Pipelines.PipelineService.RunPipeline(String pipelineName, TArgs args) +184
+   Sitecore.Mvc.Routing.RouteHttpHandler.BeginProcessRequest(HttpContext context, AsyncCallback cb, Object extraData) +74
+   System.Web.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute() +921
+   System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously) +137
+```
+
+In my case, it was because I had not marked one of my facets as `[Serializable]`:
+
+```csharp
+[Serializable]
+public class MyFacet : Facet, IMyFacet
+{
+}
+```
+
+Had I deigned to check the logs, I would have seen:
+
+```
+11740 11:10:50 ERROR Cannot create tracker.
+Exception: System.Web.HttpException
+Message: Unable to serialize the session state. In 'StateServer' and 'SQLServer' mode, ASP.NET will serialize the session state objects, and as a result non-serializable objects or MarshalByRef objects are not permitted. The same restriction applies if similar serialization is done by the custom session state store in 'Custom' mode.
+This error will appear in Experience Explorer mode and normal mode, but not in Experience Editor or Preview mode.
+```
