@@ -129,6 +129,20 @@ const result = groupedByYear.sort((a, b) => b.year - a.year);
                         ))
 
 					}
+
+<!-- {
+	result.map((group) => (
+		 group.posts.map((post) => 
+		
+		<span>{post.data.pubDate.toLocaleDateString("en-GB").split("/").reverse().join("/")}/{post.slug}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span>blog/{post.slug}</span>		
+		<br/>
+
+					
+		)
+		
+	))
+
+				} -->
 			</section>
 		</main>
 		<Footer />
