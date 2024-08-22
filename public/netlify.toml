@@ -1,0 +1,10 @@
+[[redirects]]
+  from = "https://marhwellion.com/*"
+  to = "https://mhwelander.net/:splat"
+  status = 301
+  force = true
+[[redirects]]
+  from = "https://www.marhwellion.com/*"
+  to = "https://mhwelander.net/:splat"
+  status = 301
+  force = true
