@@ -1,14 +1,15 @@
-import type { CookieConsentConfig } from 'vanilla-cookieconsent';
+import type { CookieConsentConfig } from "vanilla-cookieconsent";
+
 
 export const config: CookieConsentConfig = {
   guiOptions: {
     consentModal: {
-      layout: 'box inline',
-      position: 'bottom left',
+      layout: "box inline",
+      position: "bottom left",
     },
     preferencesModal: {
-      layout: 'box',
-      position: 'right',
+      layout: "box",
+      position: "right",
       equalWeightButtons: true,
       flipButtons: false,
     },
@@ -19,80 +20,102 @@ export const config: CookieConsentConfig = {
     },
     functionality: {},
     analytics: {
-      services: {
-        ga4: {
-          label:
-            '<a href="https://marketingplatform.google.com/about/analytics/terms/us/" target="_blank">Google Analytics 4 (dummy)</a>',
-          onAccept: () => {
-            console.log('ga4 accepted');
-            // TODO: load ga4
+      autoClear: {
+        cookies: [
+          {
+            name: /^(_ga)/, //regex
           },
-          onReject: () => {
-            console.log('ga4 rejected');
-          },
-          cookies: [
-            {
-              name: /^_ga/,
-            },
-          ],
-        },
-        another: {
-          label: 'Another one (dummy)',
-        },
+        ],
       },
+      services: {
+        "Google Analytics": {
+          onAccept() {
+            console.log('accepted');
+            
+          },
+          onReject() {
+            console.log('rejected');
+          }
+        }
+      }
     },
   },
   language: {
-    default: 'en',
-    autoDetect: 'browser',
+    default: "en",
+    autoDetect: "browser",
     translations: {
       en: {
         consentModal: {
-          title: "Hello traveller, it's cookie time!",
+          title: "Cookies for content",
           description:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.',
-          acceptAllBtn: 'Accept all',
-          acceptNecessaryBtn: 'Reject all',
-          showPreferencesBtn: 'Manage preferences',
-          footer:
-            '<a href="#link">Privacy Policy</a>\n<a href="#link">Terms and conditions</a>',
+            "I use cookies for analytics; it helps me figure out what type of content you like to read. They are disabled by default and even if you consent, you can opt out at any time.",
+          acceptAllBtn: "Accept all",
+          acceptNecessaryBtn: "Reject all",
+          showPreferencesBtn: "Manage preferences",
         },
         preferencesModal: {
-          title: 'Consent Preferences Center',
-          acceptAllBtn: 'Accept all',
-          acceptNecessaryBtn: 'Reject all',
-          savePreferencesBtn: 'Save preferences',
-          closeIconLabel: 'Close modal',
-          serviceCounterLabel: 'Service|Services',
+          title: "Consent Preferences Center",
+          acceptAllBtn: "Accept all",
+          acceptNecessaryBtn: "Reject all",
+          savePreferencesBtn: "Save preferences",
+          closeIconLabel: "Close modal",
+          serviceCounterLabel: "Service|Services",
           sections: [
             {
-              title: 'Cookie Usage',
+              title: "Cookie Usage",
               description:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+              "I use cookies for analytics; it helps me figure out what type of content you like to read. They are disabled by default and even if you consent, you can opt out at any time.",
             },
             {
               title:
                 'Strictly Necessary Cookies <span class="pm__badge">Always Enabled</span>',
               description:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-              linkedCategory: 'necessary',
+                "Necessary cookies are vital for a website to function properly.",
+              linkedCategory: "necessary",
+              cookieTable: {
+                headers: {
+                    name: "Name",
+                    domain: "Service",
+                    description: "Description",
+                    expiration: "Expiration"
+                },
+                body: [
+                    {
+                        name: "cc_cookie",
+                        domain: "mhwelander.net",
+                        description: "Persists your consent choices for cookies on this website.",
+                        expiration: "6 months"
+                    } 
+                ]
+            }
             },
             {
-              title: 'Functionality Cookies',
+              title: "Analytics Cookies",
               description:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-              linkedCategory: 'functionality',
-            },
-            {
-              title: 'Analytics Cookies',
-              description:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-              linkedCategory: 'analytics',
-            },
-            {
-              title: 'More information',
-              description:
-                'For any query in relation to my policy on cookies and your choices, please <a class="cc__link" href="#yourdomain.com">contact me</a>.',
+                "Analytics cookies are used to provide information on metrics such as visitor count, bounce rate, and traffic sources.",
+              linkedCategory: "analytics",
+              cookieTable: {
+                headers: {
+                    name: "Name",
+                    domain: "Service",
+                    description: "Description",
+                    expiration: "Expiration"
+                },
+                body: [
+                    {
+                        name: "_ga",
+                        domain: "Google Analytics",
+                        description: "Used to distinguish one user from another on a domain.",
+                        expiration: "1 year, 1 month, 4 days"
+                    },
+                    {
+                        name: "_ga_*",
+                        domain: "Google Analytics",
+                        description: "Used to store counts and page views.",
+                        expiration: "1 year, 1 month, 4 days"
+                    }
+                ]
+            }
             },
           ],
         },

@@ -1,10 +1,10 @@
 ---
-import CookieConsent from '../components/CookieConsent.astro';
 const today = new Date();
 ---
 
 <footer>
-	&copy; {today.getFullYear()} Martina Welander. All rights reserved.
+	&copy; {today.getFullYear()} Martina Welander. All rights reserved. &middot; <a href="#" data-cc="show-preferencesModal">Manage cookie preferences</a>
+
 	<div class="social-links">
 		<a href="https://github.com/mhwelander" target="_blank">
 			<span class="sr-only">Follow Martina on GitHub</span>
@@ -12,8 +12,6 @@ const today = new Date();
 		</a>
 	</div>
 </footer>
-
-<CookieConsent />
 
 <style>
 	footer {
