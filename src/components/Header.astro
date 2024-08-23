@@ -3,14 +3,26 @@ import HeaderLink from './HeaderLink.astro';
 import { SITE_TITLE } from '../consts';
 ---
 
+
+
 <header>
 	<nav>
-		<h2 class="siteTitle"><a href="/">{SITE_TITLE} <span>&lt;3</span>	</a></h2>
-		<div class="internal-links">
-			<HeaderLink href="/blog">Blog</HeaderLink><!--
-			<HeaderLink href="/blog">YouTube</HeaderLink>			
-			<HeaderLink href="/blog">Resumé</HeaderLink> -->
+		<div class="narrowNav">
+			<h2 class="siteTitle"><a href="/">{SITE_TITLE} <span>&lt;3</span>	</a></h2>
+			<div class="kebab">
+				<a href="#" id="kebabToggle">
+					Menu
+				</a>
+			</div>
+			</div>
+		<div class="internal-links hide" id="kebabLinks">
+			<HeaderLink href="/">Home</HeaderLink>
+			<HeaderLink href="/blog">Blog</HeaderLink> <!-- 
+			<HeaderLink href="/tube">YouTube</HeaderLink>			
+			<HeaderLink href="/resume">Resumé</HeaderLink> -->
 		</div>
+	</div>
+
 		<div class="social-links">
 			<a href="https://github.com/mhwelander" target="_blank">
 				<span class="sr-only">Follow Martina on GitHub</span>
@@ -46,6 +58,10 @@ import { SITE_TITLE } from '../consts';
 		justify-content: space-between;
 		min-height: 60px;
 	}
+	
+	nav .kebab {
+		display: none;
+	}
 	nav a {
 		padding: 1em 0.5em;
 		color: var(--black);
@@ -56,22 +72,74 @@ import { SITE_TITLE } from '../consts';
 		text-decoration: none;
 		border-bottom-color: var(--pink);
 	}
-
 	
 	.social-links,
 	.social-links a {
 		display: flex;
 	}
 	@media (max-width: 720px) {
-		.social-links {
+		.social-links,
+		.internal-links {
+			/* display: none; */
+		}
+		.internal-links.show {
+			display: block;
+		}
+
+		.social-links { 
 			display: none;
+		}
+
+		nav h2 {
+			padding: 1em 0;
+		}
+
+		nav {
+			display: block;
+		}
+
+		nav .narrowNav { 
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		nav .kebab {
+			display: flex;
+			padding: 0 1em;
+		}
+
+		.internal-links {
+			border-top: 1px solid rgb(var(--gray-light));
+			padding: 1em 0;
+			display: none;
+		}
+
+		.internal-links a.active {
+			border: 0;
+		}
+
+		.internal-links a {
+			display: block;
+			padding: 0.2em 0.5em;
+			border: 0;
 		}
 
 	}
 
 	@media (max-width: 360px) {
-		.internal-links {
-			display: none;
-		}
 	}
 </style>
+
+<script>
+	var y = document.getElementById("kebabLinks");
+	var x = document.getElementById("kebabToggle");
+	
+	x.addEventListener('click', () => toggleNav() )
+	
+	function toggleNav() {
+		y.classList.toggle("show")
+	}
+	
+	
+	</script>
