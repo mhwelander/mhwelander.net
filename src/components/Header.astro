@@ -135,10 +135,12 @@ import { SITE_TITLE } from '../consts';
 	var y = document.getElementById("kebabLinks");
 	var x = document.getElementById("kebabToggle");
 	
-	x.addEventListener('click', () => toggleNav() )
+	if (x) {
+	x.addEventListener('click', () => toggleNav() ) }
 	
 	function toggleNav() {
-		y.classList.toggle("show")
+		if (y) {
+		y.classList.toggle("show") }
 	}
 	
 	
