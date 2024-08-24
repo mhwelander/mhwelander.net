@@ -100,6 +100,11 @@ p {
 	margin-bottom: 1em;
 }
 
+li::marker {
+	color: var(--pink);
+	content: "●  ";
+  }
+
 textarea {
 	width: 100%;
 	font-size: 16px;
