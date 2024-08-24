@@ -104,6 +104,7 @@ textarea {
 	width: 100%;
 	font-size: 16px;
 }
+
 input {
 	font-size: 16px;
 }
@@ -112,9 +113,8 @@ table {
 }
 img {
 	max-width: 100%;
-	height: auto;
 	border-radius: 8px;
-	width: auto;
+	height: auto;
 	margin: 0 auto;
 }
 code {
@@ -144,6 +144,9 @@ hr {
 	margin: 0 auto 2em auto;
 	width: 90%;
 	text-align:center;
+}
+
+.centerFig img {	
 }
 
 .centerFig p {

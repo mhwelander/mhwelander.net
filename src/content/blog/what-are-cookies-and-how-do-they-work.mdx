@@ -1,7 +1,7 @@
 ---
 title: 'What are cookies, and how do they work?'
 description: 'Lorem ipsum dolor sit amet'
-pubDate: 'April 03 2024'
+pubDate: 'August 30 2024'
 tags: [Cookies, Data Privacy]
 ---
 
@@ -9,27 +9,99 @@ I'm pretty sure I know what **cookies** are, and how they work. But I'm _also_ p
 
 <figure class="centerFig">
 
-<img src="https://preview.redd.it/im-bored-and-wanna-draw-some-bad-cats-v0-0ftw4kjoot3c1.jpeg?width=832&format=pjpg&auto=webp&s=5349501f644bb26c0369270c97225a4d1bd0c796" width="150" />
+<img src="https://preview.redd.it/im-bored-and-wanna-draw-some-bad-cats-v0-0ftw4kjoot3c1.jpeg?width=832&format=pjpg&auto=webp&s=5349501f644bb26c0369270c97225a4d1bd0c796" width="250" />
 
 <figCaption>... meow, I guess?</figCaption>
 </figure>
 
-## A cookie is a piece of text
+So I did some research. This post is for anyone with passing knowledge of cookies who really wants to get into the crumbs.
 
-When you request a web page - let's say, mhwelander.net/blog - that web page sends you a **response**. That response includes the page content (hopefully) in the form of HTML, Javascript, and CSS, which your browser
+## First of all: What is the point of a cookie?
 
-The reponse can _also_ include a number of cookies. Cookies are little pieces of text
+A cookie is a way to **uniquely identify** a person **between page requests** (going from one page to another) and **between sessions** (visiting a site on Monday, and then on Friday). Here is how the internet works without cookies (if we assume that [cookies are the only way to uniquely identify a person](#)):
 
-```
-cc_cookie=%7B%22categories%22%3A%5B%22necessary%22%2C%22functionality%22%2C%22analytics%22%5D%2C%22revision%22%3A0%2C%22data%22%3Anull%2C%22consentTimestamp%22%3A%222024-08-23T10%3A07%3A39.714Z%22%2C%22consentId%22%3A%22ec9d23ac-c763-497d-b865-f74c848ae866%22%2C%22services%22%3A%7B%22necessary%22%3A%5B%5D%2C%22functionality%22%3A%5B%5D%2C%22analytics%22%3A%5B%22Google%20Analytics%22%5D%7D%2C%22lastConsentTimestamp%22%3A%222024-08-23T12%3A57%3A36.925Z%22%2C%22expirationTime%22%3A1740142656925%7D; _ga=GA1.1.1324407917.1724417857; _ga_ZG72YM767T=GS1.1.1724417857.1.1.1724417859.0.0.0
-```
+* You visit a website about birds
+* You look at a page about pidgeons
+* You look at a page about hawks
+* Three days later, you open your browser again and visit a page about peregrine falcons
 
-## Where did those cookies come from?!
+Without cookies, there is **no way to know that these requests came from the same person**. I can't track your path through the website or how long you spent, or that you had two sessions. 
 
-Those cookies came from the **response header**.
+[image of scattered data]
 
-## How to look at your cookies
+It's all just 'hits', like in the olden days of hit counters.
 
-## First party vs third party cookies
+<figure class="centerFig">
 
-## Http Only cookies
+![alt text](./images/2024/hit-counters.png)
+
+<figCaption>Retro hit counters, still available on hitwebcounter.com</figCaption>
+</figure>
+
+With cookies:
+
+* You visit website about birds, and it ends you a cookie that is unique to you
+* You look at a page about pidgeons - it knows about the cookie
+* You look at page about hawks - it knows about the cookie
+* Three days later, you open your browser again and visit a page about peregrine falcons - it, too, knows about the cookie
+
+[image of connected data]
+
+## Who cares?
+
+Why is that important? Tracking, personalization.. 'a human from Colorado visited pages about birds' is not possible without a cookie (or some other identifier). The best you can do without a cookie is to say 'people visited the pidgeon page'. 
+
+## You get a cookie, and you get a cookie!
+
+When you request a web page - let's say, `mhwelander.net` - that web page sends you a **response**. That response contains all the pieces of text required to display the page: HTML, CSS, scripts, images, fonts - and **cookies**, although you (and many legislative bodies) could argue that cookies are an _optional_ part of a healthy diet.
+
+[image]
+
+You can see this happening in [Chrome Developer Tools](https://developer.chrome.com/docs/devtools). Click `Option + ⌘ + I` (Mac) or `F12` (Windows), then click on the **Network** tab and refresh your page. Notice that the response from `mhwelander.net` includes various requests to get fonts, stylesheets, and script files:
+
+<figure class="centerFig">
+
+![](./images/2024/network-request.png)
+
+<figCaption>The network app</figCaption>
+</figure>
+
+## But where be the cookies?
+
+Although cookies are not on that list on an obvious way (websites are not sending `23dDie8abc303.cookie` files), _one or more of the requests in that list_ is **delivering cookies to your browser**:
+
+[Highlight things that could be setting cookies]
+
+ You can see the cookies your browser has stored for a particular site in **Application** tab of the Chrome Developer Tools, under **Storage > Cookies > [yourwebsite]**:
+
+<figure class="centerFig">
+
+![](./images/2024/application-cookies.png)
+
+<figCaption>Cookies sent by mhwelander.net</figCaption>
+</figure>
+
+For example, the contents of my `_ga` cookie is `GA1.1.748647506.1724449994` - tasty stuff. Your browser then **stores** those cookies until:
+
+* They expire
+* You delete them
+* A script on the website (such as a cookie consent banner) deletes them - or at least the ones [that a script is capable of deleting](#)
+
+## Exactly how are cookies being delivered?
+
+If websites are not sending you `*.cookie` files, then how do they make? You can receive a cookie from a website in two ways:
+
+* In the HTTP response header (so fancy)
+* Set by some Javascript
+
+### Set by Javascript
+
+### Set by the HTTP response header
+
+## So I've caught cookies. What are they used for?
+
+## Domain matters: First party and third party cookies
+
+http response header - set third party cookie
+
+### Why does the Google Analytics script say mhwelander.net and not google.com?
