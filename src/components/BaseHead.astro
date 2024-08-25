@@ -52,6 +52,8 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
 <!-- Google tag (gtag.js) -->
 <script type="text/plain" async src="https://www.googletagmanager.com/gtag/js?id=G-ZG72YM767T" data-category="analytics"></script>
 <script> // @ts-nocheck
+
+  if (window.location.hostname != "localhost") {
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
 
@@ -64,6 +66,7 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
           'ad_personalization': 'denied',
           'ad_user_data': 'denied'
         });
+      }
 </script>
 
 <script type="text/plain" data-category="analytics">
