@@ -100,7 +100,7 @@ p {
 	margin-bottom: 1em;
 }
 
-li::marker {
+.prose li::marker {
 	color: var(--pink);
 	content: "●  ";
   }
