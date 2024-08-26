@@ -3,6 +3,7 @@ title: 'What are cookies, and how do they work?'
 description: 'Lorem ipsum dolor sit amet'
 pubDate: 'August 30 2024'
 tags: [Cookies, Data Privacy]
+showToc: true
 ---
 
 I'm pretty sure I know what **cookies** are, and how they work. But I'm _also_ pretty sure I know what a **cat** looks like, and yet, drawing one without reference results in.. something less than ideal:
@@ -16,9 +17,18 @@ I'm pretty sure I know what **cookies** are, and how they work. But I'm _also_ p
 
 So I did some research. This post is for anyone with passing knowledge of cookies who really wants to get into the crumbs.
 
+<!-- toc -->
+
 ## What is a cookie, and what is the point?
 
-A cookie is a **piece of text** that a website sends to your browser that **uniquely identifies you** to that website. Your browser stores the cookie, and includes it in every subsequent requests to that website:
+A cookie is a **piece of text** that a website sends to your browser that **uniquely identifies you** to that website:
+
+<figure class="centerFig">
+![](./images/2024/cookie-prom.png)
+<figCaption>"Hi, I'm your cookie"</figCaption>
+</figure>
+
+ Your browser **stores that cookie**, and includes it in every subsequent requests to that website. The website now has a mechanism by which to identify you between page requests and (depending on the type of cookie) between browsing sessions:
 
 <figure class="centerFig">
 ![](./images/2024/cookies-1.png)
@@ -32,7 +42,7 @@ Without a cookie, a website has no way of identify you. You are a shiny new stra
 <figCaption>This website is a total Dori</figCaption>
 </figure>
 
-## _Why_ does a website need to remember me? I just want to look at pictures of old trains...
+### _Why_ does a website need to remember me? I just want to look at pictures of old trains...
 
 Often, it doesn't! And not all websites use cookies - that is something the creator of that website decides to do. For example, I chose to add the Google Analytics script tag to this blog, which means that you will receive two cookies (if you consent):
 
@@ -57,14 +67,14 @@ other fluff:
 
 If you were given a **session cookie**, the website can identify you until you close your browser. If you were given a **persistent cookie**, the website remembers you across multiple sessions.
 
-## Is the cookie there forever?
+### Is the cookie there forever?
 
 No. A cookie lasts until you delete it, or until it expires. The website that issues the cookie sets the expiry date, but:
 
 * Most browsers limit the max age ([Chrome's upper limit is 400 days](https://developer.chrome.com/blog/cookie-max-age-expires))
 * Expiry dates must follow any regulation/s in the visitor's country
 
-## How does it _really, technically_ work?
+## How does it _actually, technically_ work?
 
 When you request a web page - let's say, `mhwelander.net` - that web page sends you a **response**. That response contains all the pieces of text required to display the page: HTML, CSS, scripts, images, fonts - and **cookies**, although you (and many legislative bodies) could argue that cookies are an _optional_ part of a healthy diet.
 
@@ -79,7 +89,7 @@ You can see this happening in [Chrome Developer Tools](https://developer.chrome.
 <figCaption>The network app</figCaption>
 </figure>
 
-## But where be the cookies?
+### But where be the cookies?
 
 Although cookies are not on that list on an obvious way (websites are not sending `23dDie8abc303.cookie` files), _one or more of the requests in that list_ is **delivering cookies to your browser**:
 
@@ -100,7 +110,7 @@ For example, the contents of my `_ga` cookie is `GA1.1.748647506.1724449994` - t
 * You delete them
 * A script on the website (such as a cookie consent banner) deletes them - or at least the ones [that a script is capable of deleting](#)
 
-## Exactly how are cookies being delivered?
+### Exactly how are cookies being delivered?
 
 If websites are not sending you `*.cookie` files, then how do they make? You can receive a cookie from a website in two ways:
 
@@ -111,7 +121,7 @@ If websites are not sending you `*.cookie` files, then how do they make? You can
 
 ### Set by the HTTP response header
 
-## Domain matters: First party and third party cookies
+## First party and third party cookies
 
 http response header - set third party cookie
 
@@ -122,3 +132,5 @@ Ah, well.. 'first party cookie' means 'cookie where the domain is mhwelander.net
 Isn't that the same thing?
 
 Yeah. Kind of. :) 
+
+## HTTP-Only and regular cookies
