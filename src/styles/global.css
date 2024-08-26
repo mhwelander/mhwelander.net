@@ -207,6 +207,17 @@ hr {
 	padding: 1.5em 0 0 0;
 }
 
+.toc {
+	background: rgb(var(--gray-light), 50%);
+	width: 80%;
+	margin: 0 auto;
+	padding: 1em;
+}
+
+.toc ul li::marker {
+	color: black;
+}
+
 
 .tableWrapper {
   margin: 0 auto;
