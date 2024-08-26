@@ -16,42 +16,55 @@ I'm pretty sure I know what **cookies** are, and how they work. But I'm _also_ p
 
 So I did some research. This post is for anyone with passing knowledge of cookies who really wants to get into the crumbs.
 
-## First of all: What is the point of a cookie?
+## What is a cookie, and what is the point?
 
-A cookie is a way to **uniquely identify** a person **between page requests** (going from one page to another) and **between sessions** (visiting a site on Monday, and then on Friday). Here is how the internet works without cookies (if we assume that [cookies are the only way to uniquely identify a person](#), which is not strictly true):
-
-* You visit a website about birds
-* You look at a page about pidgeons
-* You look at a page about hawks
-* Three days later, you open your browser again and visit a page about peregrine falcons
-
-Without cookies, there is **no way to know that these requests came from the same person**. I can't track your path through the website or how long you spent, or that you had two sessions. 
-
-[image of scattered data]
-
-It's all just 'hits', like in the olden days of hit counters.
+A cookie is a **piece of text** that a website sends to your browser that **uniquely identifies you** to that website. Your browser stores the cookie, and includes it in every subsequent requests to that website:
 
 <figure class="centerFig">
-
-![alt text](./images/2024/hit-counters.png)
-
-<figCaption>Retro hit counters, still available on hitwebcounter.com</figCaption>
+![](./images/2024/cookies-1.png)
+<figCaption>A website recognizing an old friend</figCaption>
 </figure>
 
-With cookies:
+Without a cookie, a website has no way of identify you. You are a shiny new stranger each time you request a page:
 
-* You visit website about birds, and it ends you a cookie that is unique to you
-* You look at a page about pidgeons - it knows about the cookie
-* You look at page about hawks - it knows about the cookie
-* Three days later, you open your browser again and visit a page about peregrine falcons - it, too, knows about the cookie
+<figure class="centerFig">
+![](./images/2024/cookies-2.png)
+<figCaption>This website is a total Dori</figCaption>
+</figure>
 
-[image of connected data]
+## _Why_ does a website need to remember me? I just want to look at pictures of old trains...
 
-## Who cares?
+Often, it doesn't! And not all websites use cookies - that is something the creator of that website decides to do. For example, I chose to add the Google Analytics script tag to this blog, which means that you will receive two cookies (if you consent):
 
-Why is that important? Tracking, personalization.. 'a human from Colorado visited pages about birds' is not possible without a cookie (or some other identifier). The best you can do without a cookie is to say 'people visited the pidgeon page'. 
+* `_ga`
+* `_ga_*` 
 
-## You get a cookie, and you get a cookie!
+The site does not _need_ cookies to work, and you can opt out of cookies at any time by clicking **Manage cookie preferences** in the footer.
+
+### There are some essential cookies...
+
+You must have a cookie in order to:
+
+* To keep you logged in (session cookie)
+* To save your preferences (for example, dark mode or light mode)
+
+### ...and many non-essential cookies
+
+other fluff:
+
+* For analytics - to track your journey
+* For personalization
+
+If you were given a **session cookie**, the website can identify you until you close your browser. If you were given a **persistent cookie**, the website remembers you across multiple sessions.
+
+## Is the cookie there forever?
+
+No. A cookie lasts until you delete it, or until it expires. The website that issues the cookie sets the expiry date, but:
+
+* Most browsers limit the max age ([Chrome's upper limit is 400 days](https://developer.chrome.com/blog/cookie-max-age-expires))
+* Expiry dates must follow any regulation/s in the visitor's country
+
+## How does it _really, technically_ work?
 
 When you request a web page - let's say, `mhwelander.net` - that web page sends you a **response**. That response contains all the pieces of text required to display the page: HTML, CSS, scripts, images, fonts - and **cookies**, although you (and many legislative bodies) could argue that cookies are an _optional_ part of a healthy diet.
 
