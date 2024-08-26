@@ -15,6 +15,7 @@
     "@astrojs/rss": "^4.0.7",
     "@astrojs/sitemap": "^3.1.6",
     "astro": "^4.12.2",
+    "astro-custom-toc": "^2.0.24",
     "typescript": "^5.5.4",
     "vanilla-cookieconsent": "^3.0.1"
   }

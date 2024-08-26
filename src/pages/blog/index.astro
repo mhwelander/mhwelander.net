@@ -62,16 +62,21 @@ const result = groupedByYear.sort((a, b) => b.year - a.year);
 			}
 
             .categoryTitle {
-                font-size: 2em;
-                margin: 0 0 1em;
+				margin: 0 0 1em;
             }
 
 			.title {
 				margin: 0 0 0.1em 0;
 				color: rgb(var(--black));
 				line-height: 1;
-                font-size: 1.4em;
+                font-size: 1.6em;
                 font-weight: normal;
+			}
+
+			.blogList {
+				border-top: 1px solid lightgray;
+				margin: 2em 0 0 0;
+				padding: 2em 0 0 0;
 			}
 			.date {
 				margin: 0;
@@ -93,6 +98,10 @@ const result = groupedByYear.sort((a, b) => b.year - a.year);
 					width: 100%;
 				}
 
+				h2 {
+					font-size: 1.8em;
+				}
+
 				ul li:first-child .title {
 					font-size: 1.563em;
 				}
@@ -102,7 +111,8 @@ const result = groupedByYear.sort((a, b) => b.year - a.year);
 	<body>
 		<Header />
 		<main>
-			<section>
+			<h1>Blog</h1>
+			<section class="blogList">
 					{
                         result.map((group) => (
                             <h2 class="categoryTitle">{ group.year }</h2>
