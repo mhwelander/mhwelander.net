@@ -1,0 +1,33 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'div'>;
+
+const { class: className, title, ...props } = Astro.props;
+
+---
+
+<div class:list={[className, "block"]} {...props}>
+	<slot />
+</div>
+
+<style>
+
+    .block {
+        /* background: rgb(var(--gray-light), 50%); */
+        display: block;
+        padding: 0.3em 1.5em;
+        margin: 0 auto 1em;
+    }
+
+
+    .note {
+        border-left: 5px solid #38b6f1;
+        background: #38b6f12c;
+    }
+
+    .warning {
+        border-left: 5px solid #eb9928;
+        background: #eb99282c;
+    }
+</style>
