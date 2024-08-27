@@ -19,7 +19,7 @@ export default defineConfig({
   integrations: [customToc(
     {
       template: tocTemplate,
-      maxDepth: 2
+      maxDepth: 3
     }
   ), mdx(), sitemap()]
 });

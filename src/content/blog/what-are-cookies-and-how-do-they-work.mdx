@@ -19,7 +19,7 @@ So I did some research. This post is for anyone with passing knowledge of cookie
 
 <!-- toc -->
 
-## What is a cookie, and what is the point?
+## What is a cookie?
 
 A cookie is a **piece of text** that a website sends to your browser that **uniquely identifies you** to that website:
 
@@ -35,46 +35,68 @@ A cookie is a **piece of text** that a website sends to your browser that **uniq
 <figCaption>A website recognizing an old friend</figCaption>
 </figure>
 
-Without a cookie, a website has no way of identify you. You are a shiny new stranger each time you request a page:
+Without a cookie, a website has no way of identify you between page requests or sessions. You are a shiny and exciting stranger each time you request a page:
 
 <figure class="centerFig">
 ![](./images/2024/cookies-2.png)
 <figCaption>This website is a total Dori</figCaption>
 </figure>
 
-### _Why_ does a website need to remember me? I just want to look at pictures of old trains...
+### Who decides which cookies a website should have?
 
-Often, it doesn't! And not all websites use cookies - that is something the creator of that website decides to do. For example, I chose to add the Google Analytics script tag to this blog, which means that you will receive two cookies (if you consent):
+The website owner decides which cookies a website should give to users.  Cookies can created by:
 
-* `_ga`
-* `_ga_*` 
+* The website itself (through code)
+* An embedded script (for example, Google Analytics)
+* An embedded an iframe (for example, a YouTube video)
 
-The site does not _need_ cookies to work, and you can opt out of cookies at any time by clicking **Manage cookie preferences** in the footer.
+For example, by choosing to add Google Analytics to my website (you can opt out at any time in the footer), I added a script that issues `_ga` and `_ga_*` cookies to visitors.
 
-### There are some essential cookies...
+### Are cookies essential?
 
-You must have a cookie in order to:
+Some cookies are in fact **essential**, which means that website does not function correctly without them. For example, cookies are required to:
 
-* To keep you logged in (session cookie)
-* To save your preferences (for example, dark mode or light mode)
+* Keep you logged in (session cookie)
+* Save your preferences (for example, dark mode or light mode)
 
-### ...and many non-essential cookies
+**Non-essential cookies** include cookies used for:
 
-other fluff:
+* Analytics (website performance)
+* Personalization
 
-* For analytics - to track your journey
-* For personalization
-
-If you were given a **session cookie**, the website can identify you until you close your browser. If you were given a **persistent cookie**, the website remembers you across multiple sessions.
+Very useful to a business, and often make your experience more tailored to you, but you do not have to accept them.
 
 ### Is the cookie there forever?
 
-No. A cookie lasts until you delete it, or until it expires. The website that issues the cookie sets the expiry date, but:
+No. A **persistent cookie** lasts until you delete it, or until it expires. The website that issues the cookie sets the expiry date, but:
 
 * Most browsers limit the max age ([Chrome's upper limit is 400 days](https://developer.chrome.com/blog/cookie-max-age-expires))
 * Expiry dates must follow any regulation/s in the visitor's country
 
-## How does it _actually, technically_ work?
+If you were given a **session cookie**, the website can identify you until you close your browser.
+
+## What is a cookie used for?
+
+Cookies by themselves don't really do anything - they are bits of text. Just like your passport doesn't really 'do' anything on its own. The point of a cookie is to identify that events belong to a particular person.
+
+* I visited trains page
+* I visited another trains page
+* I scrolled all the way to the bottom of a page
+* I came back to the website every day for a week
+
+Shove all that into an analytics database.
+
+### Example: Analytics
+
+* Collect sessions from 100 people 
+* Notice that people drop off at the checkout page
+* Notice that pages that are image heavy get the most views
+
+### Example: Personalization
+
+* You are very interested in trains from 1900 - 1920 -- suggest related content to you
+
+## How does it actuallly work?
 
 When you request a web page - let's say, `mhwelander.net` - that web page sends you a **response**. That response contains all the pieces of text required to display the page: HTML, CSS, scripts, images, fonts - and **cookies**, although you (and many legislative bodies) could argue that cookies are an _optional_ part of a healthy diet.
 
