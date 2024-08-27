@@ -5,7 +5,7 @@ pubDate: 'Jan 8 2018'
 tags: [Sitecore]
 showToc: true
 ---
-
+import Block from '../../components/Block.astro';
 
 Here are some of the key changes made to xConnect and the xDB in the recently released [9.0 Update 1](https://dev.sitecore.net/Downloads/Sitecore_Experience_Platform/90/Sitecore_Experience_Platform_90_Update1.aspx) – including links to documentation. For a full list of changes, see the official [release notes](https://dev.sitecore.net/Downloads/Sitecore%20Experience%20Platform/90/Sitecore%20Experience%20Platform%2090%20Update1/Release%20Notes).
 
@@ -24,7 +24,9 @@ In the context of the tracker, you can [trigger an outcome for a particular pag
 
 In 9.0.1, the `RemoveFromSession()` method on the `ContactManager` class has made public. This method [reloads a contact from xConnect into shared session state](http://the%20http//doc.sitecore.net/developers/xp/tracking-and-session/tracker/tracking-contacts/contact-facets/update-facets.html#re-loading-contact-data), and can be used to refresh the facet values available in session after submitting changes to xConnect.
 
-**Note:** If you do not reload the contact after submitting changes to xConnect – such as updating their birth date or e-mail address – the facet data that is being held in session will be out of date. In 9.0.0, you must manually updated the facet values held in session after submitting a change to xConnect.
+<Block class="note">
+If you do not reload the contact after submitting changes to xConnect – such as updating their birth date or e-mail address – the facet data that is being held in session will be out of date. In 9.0.0, you must manually updated the facet values held in session after submitting a change to xConnect.
+</Block>
 
 ## Use custom facets in your custom activity types
 
