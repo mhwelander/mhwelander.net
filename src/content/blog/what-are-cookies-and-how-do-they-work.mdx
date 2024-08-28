@@ -6,6 +6,8 @@ tags: [Cookies, Data Privacy]
 showToc: true
 ---
 
+import Block from '../../components/Block.astro'
+
 I'm pretty sure I know what **cookies** are, and how they work. But I'm _also_ pretty sure I know what a **cat** looks like, and yet, drawing one without reference results in.. something less than ideal:
 
 <figure class="centerFig">
@@ -42,38 +44,48 @@ Without a cookie, a website has no way of identify you between page requests or 
 <figCaption>This website is a total Dori</figCaption>
 </figure>
 
-### Who decides which cookies a website should have?
+### Who decides which cookies a website should issue?
 
-The website owner decides which cookies a website should give to users.  Cookies can created by:
+Technically speaking, the **website owner** decides which cookies a website issues to visitors - but it's not always obvious where the cookies are coming from. Cookies can created by:
 
-* The website itself (through code)
+* The website itself (through Javascript or server-side code)
 * An embedded script (for example, Google Analytics)
 * An embedded an iframe (for example, a YouTube video)
 
-For example, by choosing to add Google Analytics to my website (you can opt out at any time in the footer), I added a script that issues `_ga` and `_ga_*` cookies to visitors.
+I was surprised by the number of cookies set by YouTube.
 
-### Are cookies essential?
+<Block class="warning">
 
-Some cookies are in fact **essential**, which means that website does not function correctly without them. For example, cookies are required to:
+If you have a large website with many embedded scripts and iframes, it can be really difficult to know where all the cookies are coming from.
 
-* Keep you logged in (session cookie)
+</Block>
+
+### Do websites really need cookies?
+
+Some cookies are in fact 🔖**essential**, which means that a website cannot function correctly without them. For example, cookies are required to:
+
+* Keep you logged between page requests (session cookie)
 * Save your preferences (for example, dark mode or light mode)
 
-**Non-essential cookies** include cookies used for:
+**🔖Non-essential cookies** include cookies used for:
 
 * Analytics (website performance)
 * Personalization
 
-Very useful to a business, and often make your experience more tailored to you, but you do not have to accept them.
+"Improving your website experience"
 
-### Is the cookie there forever?
+Very useful to a business, and often make your experience more tailored to you, but you do not have to accept them. The website will still work.
 
-No. A **persistent cookie** lasts until you delete it, or until it expires. The website that issues the cookie sets the expiry date, but:
+### How long does a cookie last?
+
+In my house? Less than three minutes.
+
+In a browser, however, a 🔖**persistent cookie** lasts until you delete it, or until it expires. The website that issues the cookie sets the expiry date, but:
 
 * Most browsers limit the max age ([Chrome's upper limit is 400 days](https://developer.chrome.com/blog/cookie-max-age-expires))
 * Expiry dates must follow any regulation/s in the visitor's country
 
-If you were given a **session cookie**, the website can identify you until you close your browser.
+If you were given a 🔖**session cookie**, the website can identify you until you close your browser.
 
 ## What is a cookie used for?
 
@@ -96,7 +108,7 @@ Shove all that into an analytics database.
 
 * You are very interested in trains from 1900 - 1920 -- suggest related content to you
 
-## How does it actuallly work?
+## How does it actually work?
 
 When you request a web page - let's say, `mhwelander.net` - that web page sends you a **response**. That response contains all the pieces of text required to display the page: HTML, CSS, scripts, images, fonts - and **cookies**, although you (and many legislative bodies) could argue that cookies are an _optional_ part of a healthy diet.
 
@@ -111,7 +123,7 @@ You can see this happening in [Chrome Developer Tools](https://developer.chrome.
 <figCaption>The network app</figCaption>
 </figure>
 
-### But where be the cookies?
+### Seeing your cookies
 
 Although cookies are not on that list on an obvious way (websites are not sending `23dDie8abc303.cookie` files), _one or more of the requests in that list_ is **delivering cookies to your browser**:
 
@@ -132,16 +144,14 @@ For example, the contents of my `_ga` cookie is `GA1.1.748647506.1724449994` - t
 * You delete them
 * A script on the website (such as a cookie consent banner) deletes them - or at least the ones [that a script is capable of deleting](#)
 
-### Exactly how are cookies being delivered?
+### Cookies come from a script or from the HTTP response header
 
 If websites are not sending you `*.cookie` files, then how do they make? You can receive a cookie from a website in two ways:
 
 * In the HTTP response header (so fancy)
 * Set by some Javascript
 
-### Set by Javascript
-
-### Set by the HTTP response header
+### Cookies are included in the request header
 
 ## First party and third party cookies
 
@@ -156,3 +166,15 @@ Isn't that the same thing?
 Yeah. Kind of. :) 
 
 ## HTTP-Only and regular cookies
+
+## What is all the fuss about cookies?
+
+## Glossary
+
+### Session cookie
+
+### Persistent cookie
+
+### Essential cookies
+
+### Non-essential cookies

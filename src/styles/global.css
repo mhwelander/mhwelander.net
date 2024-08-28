@@ -8,6 +8,7 @@
 
 :root {
 	--link: #38b6f1;
+	--green: #00c9ab;
 	--accent: 210, 211, 218;
 	--accent-dark: #000d8a;
 	--black: 15, 18, 25;
@@ -73,11 +74,11 @@ h1 {
 	margin: 0 0 0.3em;
 }
 h2 {
-	font-size: 2.1em;
+	font-size: 2.6em;
 }
 
 h3 {
-	font-size: 1.5em;
+	font-size: 2.0em;
 	font-weight: 200;
 }
 h4 {
@@ -179,7 +180,7 @@ hr {
 }
 
 .tag { 
-	background: rgb(var(--gray));
+	background: var(--green);
 	color: white;
 	border-radius: 10px;
 	padding: 1px 10px;

@@ -3,7 +3,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { Image } from 'astro:assets';
-import image1 from '../images/youtube.png'
+import martina from '../images/martina.png'
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
 
@@ -18,7 +18,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 			<h1>Hej!</h1>
 			<div class="prose">
 			<figure class="centerFig">
-			<img src="../images/martina.png" width="300"/>
+				<Image src={martina} alt="A black-and-white selfie of Martina, who is smiling wide" width="300"/>
 			</figure>
 
 <p>I'm Martina, and I am programmer and writer and <strong>I love to teach tech</strong>. I currently work as a <a href="https://tactilegames.com/martina-welander/">Technical Writer</a> at <a href="https://www.tactilegames.com/">Tactile Games</a>, and previously as an Education Engineer at <a href="http://www.prisma.io/">Prisma</a> and a Programmer Writer at <a href="https://sitecore.com/">Sitecore</a> (C#, .NET Core). You can find me on <a href="https://github.com/mhwelander">GitHub</a>, <a href="https://www.linkedin.com/in/martinawelander/">LinkedIn</a>, and <a href="https://bsky.app/profile/mhwelander.bsky.social">Bluesky</a></a>.</p>
