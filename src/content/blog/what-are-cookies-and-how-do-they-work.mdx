@@ -19,18 +19,22 @@ I'm pretty sure I know what **cookies** are, and how they work. But I'm _also_ p
 
 So I did some research. This post is for anyone with passing knowledge of cookies who really wants to get into the crumbs.
 
+<Block class="note">
+This blog post is about how cookies work - specifically _cookies_, and specifically how they _work_. It is not legal advice, nor does it cover other means of tracking and identifying users online.
+</Block>
+
 <!-- toc -->
 
 ## What is a cookie?
 
-A cookie is a **piece of text** that a website sends to your browser that **uniquely identifies you** to that website:
+A cookie is a **piece of text** sent by a website to your browser that **uniquely identifies you** to that website:
 
 <figure class="centerFig">
 ![](./images/2024/cookie-prom.png)
 <figCaption>"Hi, I'm your cookie"</figCaption>
 </figure>
 
- Your browser **stores that cookie**, and includes it in every subsequent requests to that website. The website now has a mechanism by which to identify you between page requests and (depending on the type of cookie) between browsing sessions:
+ Your browser **stores that cookie**, and includes it in every subsequent requests to that website. The website now has a **mechanism** by which to identify you between page requests and (depending on the type of cookie) between browsing sessions:
 
 <figure class="centerFig">
 ![](./images/2024/cookies-1.png)
@@ -48,16 +52,14 @@ Without a cookie, a website has no way of identify you between page requests or 
 
 Technically speaking, the **website owner** decides which cookies a website issues to visitors - but it's not always obvious where the cookies are coming from. Cookies can created by:
 
-* The website itself (through Javascript or server-side code)
-* An embedded script (for example, Google Analytics)
-* An embedded an iframe (for example, a YouTube video)
+* The **website code** itself (Javascript or server-side code)
+* An **embedded script** (for example, Google Analytics)
+* An **embedded iframe** (for example, a YouTube video)
 
-I was surprised by the number of cookies set by YouTube.
+I was very surprised by the number of cookies set by a YouTube embed! If you have a large website with user-generated content, it can be really difficult to know where all the cookies are coming from.
 
 <Block class="warning">
-
-If you have a large website with many embedded scripts and iframes, it can be really difficult to know where all the cookies are coming from.
-
+This might present a problem if you legally obligated to document all cookies and provide a way for vistors to opt in and out of processing (for example, by declining tracking cookies).
 </Block>
 
 ### Do websites really need cookies?
@@ -168,13 +170,3 @@ Yeah. Kind of. :)
 ## HTTP-Only and regular cookies
 
 ## What is all the fuss about cookies?
-
-## Glossary
-
-### Session cookie
-
-### Persistent cookie
-
-### Essential cookies
-
-### Non-essential cookies
