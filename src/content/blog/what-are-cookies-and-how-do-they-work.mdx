@@ -27,14 +27,14 @@ This blog post is about how cookies work - specifically _cookies_, and specifica
 
 ## What is a cookie?
 
-A cookie is a **piece of text** sent by a website to your browser that **uniquely identifies you** to that website:
+A cookie is a **piece of text** sent by a website to your browser that **uniquely identifies you** to that website. They have a name (`_cookieName`) and a weird-looking value (`34ADE4DDX8392`):
 
 <figure class="centerFig">
 ![](./images/2024/cookie-prom.png)
 <figCaption>"Hi, I'm your cookie"</figCaption>
 </figure>
 
- Your browser **stores that cookie**, and includes it in every subsequent requests to that website. The website now has a **mechanism** by which to identify you between page requests and (depending on the type of cookie) between browsing sessions:
+ Your browser **stores that cookie**, and includes it in every subsequent requests to website. The website now has a mechanism by which to identify you between page requests and (depending on the type of cookie) between browsing sessions:
 
 <figure class="centerFig">
 ![](./images/2024/cookies-1.png)
@@ -59,22 +59,17 @@ Technically speaking, the **website owner** decides which cookies a website issu
 I was very surprised by the number of cookies set by a YouTube embed! If you have a large website with user-generated content, it can be really difficult to know where all the cookies are coming from.
 
 <Block class="warning">
-This might present a problem if you legally obligated to document all cookies and provide a way for vistors to opt in and out of processing (for example, by declining tracking cookies).
+This might present a problem if _you_ (and not the originator of the script) are legally obligated to document all cookies and provide a way for vistors to opt out of processing (for example, by declining tracking cookies).
 </Block>
 
 ### Do websites really need cookies?
 
-Some cookies are in fact 🔖**essential**, which means that a website cannot function correctly without them. For example, cookies are required to:
+Some cookies are in fact **essential** for a website to function correctly. Many websites use session cookies to keep you logged between page requests.
 
-* Keep you logged between page requests (session cookie)
-* Save your preferences (for example, dark mode or light mode)
-
-**🔖Non-essential cookies** include cookies used for:
+**Non-essential cookies** include cookies used for:
 
 * Analytics (website performance)
 * Personalization
-
-"Improving your website experience"
 
 Very useful to a business, and often make your experience more tailored to you, but you do not have to accept them. The website will still work.
 
@@ -82,12 +77,12 @@ Very useful to a business, and often make your experience more tailored to you, 
 
 In my house? Less than three minutes.
 
-In a browser, however, a 🔖**persistent cookie** lasts until you delete it, or until it expires. The website that issues the cookie sets the expiry date, but:
+In a browser, however, a **persistent cookie** lasts until you delete it, or until it expires. The website that issues the cookie sets the expiry date, but:
 
 * Most browsers limit the max age ([Chrome's upper limit is 400 days](https://developer.chrome.com/blog/cookie-max-age-expires))
 * Expiry dates must follow any regulation/s in the visitor's country
 
-If you were given a 🔖**session cookie**, the website can identify you until you close your browser.
+By contrast, **session cookies** (a cookie issued without an expiration date) last until you close the browser.
 
 ## What is a cookie used for?
 
