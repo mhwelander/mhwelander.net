@@ -78,6 +78,7 @@ const result = groupedByYear.sort((a, b) => b.year - a.year);
 				margin: 2em 0 0 0;
 				padding: 2em 0 0 0;
 			}
+
 			.date {
 				margin: 0;
 				color: rgb(var(--gray));
@@ -121,6 +122,10 @@ const result = groupedByYear.sort((a, b) => b.year - a.year);
 							<li>
 								<a href={`/blog/${post.slug}/`}>
 									<h3 class="title">{post.data.title}</h3>
+
+                                    { post.data.description != '' && (
+                                    <p class="date">{post.data.description}</p>
+                                )}
 									<p class="date">
 										<FormattedDate date={post.data.pubDate} />
 
