@@ -20,7 +20,7 @@ I'm pretty sure I know what **cookies** are, and how they work. But I'm _also_ p
 So I did some research. This post is for anyone with passing knowledge of cookies who really wants to get into the crumbs.
 
 <Block class="note">
-This blog post is about how cookies work - specifically _cookies_, and specifically how they _work_. It is not legal advice, nor does it cover other means of tracking and identifying users online.
+This blog post is about how cookies work - specifically _cookies_, and specifically how they _work_. It is not legal advice, nor does it cover other means of tracking and/or identifying users online.
 </Block>
 
 <!-- toc -->
@@ -34,19 +34,46 @@ A cookie is a **piece of text** sent by a website to your browser that **uniquel
 <figCaption>"Hi, I'm your cookie"</figCaption>
 </figure>
 
- Your browser **stores that cookie**, and includes it in every subsequent requests to website. The website now has a mechanism by which to identify you between page requests and (depending on the type of cookie) between browsing sessions:
+ Your browser **stores that cookie**, and includes it in every subsequent requests to website. The website now has a mechanism by which to identify you between page requests and (depending on whether it is a session cookie or a persistent cookie) between browsing sessions:
 
 <figure class="centerFig">
 ![](./images/2024/cookies-1.png)
 <figCaption>A website recognizing an old friend</figCaption>
 </figure>
 
-Without a cookie, a website has no way of identify you between page requests or sessions. You are a shiny and exciting stranger each time you request a page:
+Without a cookie or other form of identifier, you cannot be identified between page requests or sessions. You are a shiny and exciting stranger each time you request a page.
 
-<figure class="centerFig">
-![](./images/2024/cookies-2.png)
-<figCaption>This website is a total Dori</figCaption>
-</figure>
+### What is a cookie used for?
+
+Cookies by themselves don't really do anything - they are bits of text. Just like your passport doesn't really 'do' anything on its own. The point of a cookie is to identify that events belong to a particular person.
+
+* I visited trains page
+* I visited another trains page
+* I scrolled all the way to the bottom of a page
+* I came back to the website every day for a week
+
+Shove all that into an analytics database.
+
+#### Example: Analytics
+
+* Collect sessions from 100 people 
+* Notice that people drop off at the checkout page
+* Notice that pages that are image heavy get the most views
+
+#### Example: Personalization
+
+* You are very interested in trains from 1900 - 1920 -- suggest related content to you
+
+### How long does a cookie last?
+
+In my house? Less than three minutes.
+
+In a browser, however, a **persistent cookie** lasts until you delete it, or until it expires. The website that issues the cookie sets the expiry date, but:
+
+* Most browsers limit the max age ([Chrome's upper limit is 400 days](https://developer.chrome.com/blog/cookie-max-age-expires))
+* Expiry dates must follow any regulation/s in the visitor's country
+
+By contrast, **session cookies** (a cookie issued without an expiration date) last until you close the browser.
 
 ### Who decides which cookies a website should issue?
 
@@ -73,37 +100,6 @@ Some cookies are in fact **essential** for a website to function correctly. Many
 
 Very useful to a business, and often make your experience more tailored to you, but you do not have to accept them. The website will still work.
 
-### How long does a cookie last?
-
-In my house? Less than three minutes.
-
-In a browser, however, a **persistent cookie** lasts until you delete it, or until it expires. The website that issues the cookie sets the expiry date, but:
-
-* Most browsers limit the max age ([Chrome's upper limit is 400 days](https://developer.chrome.com/blog/cookie-max-age-expires))
-* Expiry dates must follow any regulation/s in the visitor's country
-
-By contrast, **session cookies** (a cookie issued without an expiration date) last until you close the browser.
-
-## What is a cookie used for?
-
-Cookies by themselves don't really do anything - they are bits of text. Just like your passport doesn't really 'do' anything on its own. The point of a cookie is to identify that events belong to a particular person.
-
-* I visited trains page
-* I visited another trains page
-* I scrolled all the way to the bottom of a page
-* I came back to the website every day for a week
-
-Shove all that into an analytics database.
-
-### Example: Analytics
-
-* Collect sessions from 100 people 
-* Notice that people drop off at the checkout page
-* Notice that pages that are image heavy get the most views
-
-### Example: Personalization
-
-* You are very interested in trains from 1900 - 1920 -- suggest related content to you
 
 ## How does it actually work?
 
