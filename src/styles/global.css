@@ -157,7 +157,21 @@ hr {
 	text-align:center;
 }
 
-.centerFig img {	
+.centerFig.w100 img {	
+	max-width: 100px;
+}
+
+.centerFig.w200 img {	
+	max-width: 200px;
+}
+
+.centerFig.w200 img {	
+	max-width: 300px;
+}
+
+
+.centerFig.w400 img {	
+	max-width: 400px;
 }
 
 .centerFig p {

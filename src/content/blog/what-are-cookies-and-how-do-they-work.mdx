@@ -10,9 +10,9 @@ import Block from '../../components/Block.astro'
 
 I'm pretty sure I know what **cookies** are, and how they work. But I'm _also_ pretty sure I know what a **cat** looks like, and yet, drawing one without reference results in.. something less than ideal:
 
-<figure class="centerFig">
+<figure class="centerFig" style="width:400px">
 
-<img src="https://preview.redd.it/im-bored-and-wanna-draw-some-bad-cats-v0-0ftw4kjoot3c1.jpeg?width=832&format=pjpg&auto=webp&s=5349501f644bb26c0369270c97225a4d1bd0c796" width="250" />
+
 
 <figCaption>... meow, I guess?</figCaption>
 </figure>
@@ -27,21 +27,21 @@ This blog post is about how cookies work - specifically _cookies_, and specifica
 
 ## What is a cookie?
 
-A cookie is a **piece of text** sent by a website to your browser that **uniquely identifies you** to that website. They have a name (`_cookieName`) and a weird-looking value (`34ADE4DDX8392`):
+A cookie is a **piece of text** sent by a website to your browser that **uniquely identifies you** to that website. They have a name (`_X`) and a weird-looking value (`902A4Y`):
 
-<figure class="centerFig">
-![](./images/2024/cookie-prom.png)
+<figure class="centerFig w200">
+![](./images/2024/cookies-drawing-1.png)
 <figCaption>"Hi, I'm your cookie"</figCaption>
 </figure>
 
- Your browser **stores that cookie**, and includes it in every subsequent requests to website. The website now has a mechanism by which to identify you between page requests and (depending on whether it is a session cookie or a persistent cookie) between browsing sessions:
+ Your browser **stores that cookie**, and includes it in every subsequent requests to website [for as long as that cookie lasts](#how-long-does-a-cookie-last). This means that the website has a mechanism by which to identify you between page requests and (depending on the type of cookie) between browsing sessions:
 
 <figure class="centerFig">
 ![](./images/2024/cookies-1.png)
 <figCaption>A website recognizing an old friend</figCaption>
 </figure>
 
-Without a cookie or other form of identifier, you cannot be identified between page requests or sessions. You are a shiny and exciting stranger each time you request a page.
+Without a cookie (or some other identifier), a website cannot identify you between page requests or sessions. You are a shiny and exciting stranger each time you request a page - like the internet of old.
 
 ### What is a cookie used for?
 
