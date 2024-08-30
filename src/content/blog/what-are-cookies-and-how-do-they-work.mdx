@@ -12,7 +12,7 @@ I'm pretty sure I know what **cookies** are, and how they work. But I'm _also_ p
 
 <figure class="centerFig" style="width:400px">
 
-
+[IMAGE NEEDED]
 
 <figCaption>... meow, I guess?</figCaption>
 </figure>
@@ -34,31 +34,32 @@ A cookie is a **piece of text** sent by a website to your browser that **uniquel
 <figCaption>"Hi, I'm your cookie"</figCaption>
 </figure>
 
- Your browser **stores that cookie**, and includes it in every subsequent requests to website [for as long as that cookie lasts](#how-long-does-a-cookie-last). This means that the website has a mechanism by which to identify you between page requests and (depending on the type of cookie) between browsing sessions:
+ Your browser **stores that cookie**, and includes it in subsequent requests to that website [for as long as that cookie lasts](#how-long-does-a-cookie-last). This means that the website has a **mechanism** by which to identify you between page requests and (depending on the type of cookie) between browsing sessions:
 
 <figure class="centerFig">
 ![](./images/2024/cookies-1.png)
 <figCaption>A website recognizing an old friend</figCaption>
 </figure>
 
-Without a cookie (or some other identifier), a website cannot identify you between page requests or sessions. You are a shiny and exciting stranger each time you request a page - like the internet of old.
+Without a cookie (or some other online identifier), a website cannot identify you between requests. You are a shiny and exciting stranger each time you request a page - like the internet of old (really, really old).
 
 ### What is a cookie used for?
 
-Cookies by themselves don't really do anything - they are bits of text. Just like your passport doesn't really 'do' anything on its own. The point of a cookie is to identify that events belong to a particular person.
+Cookies by themselves don't really do anything; they are passed back and forth between the browser and the website in a not-so-thrilling game of virtual table tennis. However, when a website can uniquely identify you, it :
 
-* I visited trains page
-* I visited another trains page
-* I scrolled all the way to the bottom of a page
-* I came back to the website every day for a week
+* Which country you visited from
+* Which pages you visited and in which order
+* How long you spent on each page
+* How far you scrolled
+* Which components you interacted with (clicked on, hovered over)
 
-Shove all that into an analytics database.
+[IMAGE NEEDED - interconnected pieces of information]
+
+[IMAGE NEEDED - disconnected pieces of information]
 
 #### Example: Analytics
 
-* Collect sessions from 100 people 
-* Notice that people drop off at the checkout page
-* Notice that pages that are image heavy get the most views
+* Notice that x people visit a blog post about domestic birds
 
 #### Example: Personalization
 
@@ -75,6 +76,8 @@ In a browser, however, a **persistent cookie** lasts until you delete it, or unt
 
 By contrast, **session cookies** (a cookie issued without an expiration date) last until you close the browser.
 
+[IMAGE NEEDED - end of session]
+
 ### Who decides which cookies a website should issue?
 
 Technically speaking, the **website owner** decides which cookies a website issues to visitors - but it's not always obvious where the cookies are coming from. Cookies can created by:
@@ -84,6 +87,8 @@ Technically speaking, the **website owner** decides which cookies a website issu
 * An **embedded iframe** (for example, a YouTube video)
 
 I was very surprised by the number of cookies set by a YouTube embed! If you have a large website with user-generated content, it can be really difficult to know where all the cookies are coming from.
+
+[IMAGE NEEDED - iframes and scripts issuing cookies]
 
 <Block class="warning">
 This might present a problem if _you_ (and not the originator of the script) are legally obligated to document all cookies and provide a way for vistors to opt out of processing (for example, by declining tracking cookies).
