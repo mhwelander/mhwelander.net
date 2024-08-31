@@ -4,6 +4,8 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { Image } from 'astro:assets';
 import martina from '../images/martina.png'
+import shadow from '../images/shadow-database.png'
+import table from '../images/create-table.png'
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
 
@@ -25,14 +27,40 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
 
 <h2 id="documentation-examples">Content examples</h2>
-<p>Check out the following examples of content that I have created:</p>
+
+<h3>Documentation</h3>
 <ul>
 <li><a href="https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/databases-connections">Database connection management</a></li>
-<li><a href="https://www.youtube.com/watch?v=SmKJnITMQZw">The world's worst pool party: Connection management with Prisma (Prisma Day)</a></li>
 <li><a href="https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/pagination">Pagination with Prisma Client</a></li>
 <li><a href="https://doc.sitecore.com/developers/93/sitecore-experience-platform/en/xconnect-and-the-xdb.html">The xConnect and xDB documentation for 9.0+</a></li>
+<li><a href="https://doc.sitecore.com/xp/en/developers/93/platform-administration-and-architecture/global-privacy-guide.html">The Sitecore Privacy Guide</a> (researched and wrote)</li>
 </ul>
 
+<h3>Presentations</h3>
+
+<ul>
+	<li><a href="https://www.youtube.com/watch?v=0N3iJ1qbDR0">Virtual Developer Day 2019 - Sitecore Privacy Guide and GDPR</a></li>
+	<li><a href="https://www.youtube.com/watch?v=SmKJnITMQZw">The world's worst pool party: Connection management with Prisma (Prisma Day)</a></li>
+</ul>
+
+<h3>Comics and illustrations</h3>
+
+<figure class="centerFig w500">
+	<a href={table.src}>
+	<Image src={table} alt="CREATE TABLE cartoon" />
+</a>
+<figcaption>What happens when you <code>CREATE TABLE</code></figcaption>
+
+</figure>
+
+
+<figure class="centerFig w500">
+	<a href={shadow.src}>
+	<Image src={shadow} alt="Shadow database cartoon" />
+</a>
+<figcaption>The <a href="https://www.prisma.io/docs/orm/prisma-migrate/understanding-prisma-migrate/shadow-database">Prisma shadow database</a></figcaption>
+
+</figure>
 
 <h2 id="contact-me">Contact me</h2>
 
