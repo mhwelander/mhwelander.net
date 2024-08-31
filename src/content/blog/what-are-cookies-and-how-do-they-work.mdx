@@ -29,54 +29,59 @@ This blog post is about how cookies work - specifically _cookies_, and specifica
 
 A cookie is a **piece of text** sent by a website to your browser that **uniquely identifies you** to that website. They have a name (`_X`) and a weird-looking value (`902A4Y`):
 
-<figure class="centerFig w200">
+<figure class="centerFig w300">
 ![](./images/2024/cookies-drawing-1.png)
 <figCaption>"Hi, I'm your cookie"</figCaption>
 </figure>
 
- Your browser **stores that cookie**, and includes it in subsequent requests to that website [for as long as that cookie lasts](#how-long-does-a-cookie-last). This means that the website has a **mechanism** by which to identify you between page requests and (depending on the type of cookie) between browsing sessions:
+Your browser **stores the cookie** when it receives it, and includes it in subsequent requests to that website [for as long as that cookie lasts](#how-long-does-a-cookie-last):
 
-<figure class="centerFig">
-![](./images/2024/cookies-1.png)
+<figure class="centerFig w600">
+![](./images/2024/cookie-drawing-3.png)
 <figCaption>A website recognizing an old friend</figCaption>
 </figure>
 
-Without a cookie (or some other online identifier), a website cannot identify you between requests. You are a shiny and exciting stranger each time you request a page - like the internet of old (really, really old).
+This means that the website has a **mechanism by which to identify you** between page requests and (depending on the type of cookie) between browsing sessions:
+
+<figure class="centerFig w400">
+![](./images/2024/cookie-drawing-4.png)
+<figCaption>A website recognizing an old friend</figCaption>
+</figure>
+
+Without a cookie (or some other online identifier), a website cannot identify you between requests. You are a shiny and exciting stranger each time you request a page - like the internet of <s>my youth</s> old.
 
 ### What is a cookie used for?
 
-Cookies by themselves don't really do anything; they are passed back and forth between the browser and the website in a not-so-thrilling game of virtual table tennis. However, when a website can uniquely identify you, it :
+Cookies by themselves **don't really do anything**; the website and the browser pass them back and forth in a not-so-thrilling game of virtual table tennis. However, once a website can identify a visitor, it can [use a tracker like Google Analytics](https://www.zipy.ai/blog/website-tracking-tools) to string disparate activities together into a cohesive journey.
 
-* Which country you visited from
-* Which pages you visited and in which order
-* How long you spent on each page
-* How far you scrolled
-* Which components you interacted with (clicked on, hovered over)
+A tracker can show the path you took through the website, how long you spent on each page, and maybe even which components you interacted with and how far you scrolled. Companies can use this data to **personalize your experience** and **monitor trends** - if you spent three sessions looking at 🐝beekeeping paraphenalia, the website might start to suggest that you buy the discounted Beginner Beekeper Bundle.
 
-[IMAGE NEEDED - interconnected pieces of information]
+<figure class="centerFig w500">
+![](./images/2024/cookies-drawing-6.png)
+<figCaption>A path through the content</figCaption>
+</figure>
 
-[IMAGE NEEDED - disconnected pieces of information]
+Without a cookie, these actions are disconnected. "Someone" from Denmark looked at manual honey extractors and "someone" from Denmark for spent 10 minutes reading a single page about carpets. Is it the same person? Who knows.
 
-#### Example: Analytics
-
-* Notice that x people visit a blog post about domestic birds
-
-#### Example: Personalization
-
-* You are very interested in trains from 1900 - 1920 -- suggest related content to you
+<Block class="note">
+**Is it technically possible to track visitors by IP address?** An IP address does not necessarily identify an individual - it identifies a node on a network, which _could_ be a personal device - or it could be the router in an office.  Furthermore, most IP addresses are dynamic (they can change).
+</Block>
 
 ### How long does a cookie last?
 
 In my house? Less than three minutes.
 
-In a browser, however, a **persistent cookie** lasts until you delete it, or until it expires. The website that issues the cookie sets the expiry date, but:
+In a browser, however, a **persistent cookie** lasts until you delete it, or until it expires. The website that issues the cookie sets the expiry date, _but_:
 
 * Most browsers limit the max age ([Chrome's upper limit is 400 days](https://developer.chrome.com/blog/cookie-max-age-expires))
 * Expiry dates must follow any regulation/s in the visitor's country
 
 By contrast, **session cookies** (a cookie issued without an expiration date) last until you close the browser.
 
-[IMAGE NEEDED - end of session]
+<figure class="centerFig w400">
+![](./images/2024/cookies-drawing-5.png)
+<figCaption>A well-aged cookie</figCaption>
+</figure>
 
 ### Who decides which cookies a website should issue?
 
@@ -88,7 +93,10 @@ Technically speaking, the **website owner** decides which cookies a website issu
 
 I was very surprised by the number of cookies set by a YouTube embed! If you have a large website with user-generated content, it can be really difficult to know where all the cookies are coming from.
 
-[IMAGE NEEDED - iframes and scripts issuing cookies]
+<figure class="centerFig w500">
+![](./images/2024/cookies-drawing-7.png)
+<figCaption>Surprise cookies!</figCaption>
+</figure>
 
 <Block class="warning">
 This might present a problem if _you_ (and not the originator of the script) are legally obligated to document all cookies and provide a way for vistors to opt out of processing (for example, by declining tracking cookies).
@@ -96,17 +104,11 @@ This might present a problem if _you_ (and not the originator of the script) are
 
 ### Do websites really need cookies?
 
-Some cookies are in fact **essential** for a website to function correctly. Many websites use session cookies to keep you logged between page requests.
+Some cookies are in fact **essential** for a website to function correctly. For example, many websites use session cookies to keep you logged.
 
-**Non-essential cookies** include cookies used for:
+Cookies used for marketing purposes such as tracking and analytics are considered **non-essential** - they might be essential to the _business_, but they are not essential to the visitor.
 
-* Analytics (website performance)
-* Personalization
-
-Very useful to a business, and often make your experience more tailored to you, but you do not have to accept them. The website will still work.
-
-
-## How does it actually work?
+## How do cookies actually work?
 
 When you request a web page - let's say, `mhwelander.net` - that web page sends you a **response**. That response contains all the pieces of text required to display the page: HTML, CSS, scripts, images, fonts - and **cookies**, although you (and many legislative bodies) could argue that cookies are an _optional_ part of a healthy diet.
 

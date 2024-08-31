@@ -1,0 +1,5 @@
+---
+const images = await Astro.glob("/src/content/blog/images").then(files => {
+    return files.map(file => file.default);
+  });
+--

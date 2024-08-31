@@ -165,13 +165,21 @@ hr {
 	max-width: 200px;
 }
 
-.centerFig.w200 img {	
+.centerFig.w300 img {	
 	max-width: 300px;
 }
 
 
 .centerFig.w400 img {	
 	max-width: 400px;
+}
+
+.centerFig.w500 img {	
+	max-width: 500px;
+}
+
+.centerFig.w600 img {	
+	max-width: 600px;
 }
 
 .centerFig p {
