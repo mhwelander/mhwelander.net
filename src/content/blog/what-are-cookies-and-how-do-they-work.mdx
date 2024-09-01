@@ -8,9 +8,9 @@ showToc: true
 
 import Block from '../../components/Block.astro'
 
-I'm pretty sure I know what **cookies** are, and how they work. But I'm _also_ pretty sure I know what a **cat** looks like, and yet, drawing one without reference results in.. something less than ideal:
+I'm pretty sure I know [what **cookies** are](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies), and how they work. But I'm _also_ pretty sure I know what a **cat** looks like, and yet, drawing one without reference results in.. something less than ideal:
 
-<figure class="centerFig" style="width:400px">
+<figure class= "centerFig w400" data-lightbox="true">
 
 [IMAGE NEEDED]
 
@@ -71,7 +71,7 @@ Without a cookie, these actions are disconnected. "Someone" from Denmark looked 
 
 In my house? Less than three minutes.
 
-In a browser, however, a **persistent cookie** lasts until you delete it, or until it expires. The website that issues the cookie sets the expiry date, _but_:
+In a browser, however, a **persistent cookie** lasts until you delete manually it, or until it expires. The website that issues the cookie sets the expiry date, _but_:
 
 * Most browsers limit the max age ([Chrome's upper limit is 400 days](https://developer.chrome.com/blog/cookie-max-age-expires))
 * Expiry dates must follow any regulation/s in the visitor's country
@@ -108,52 +108,124 @@ Some cookies are in fact **essential** for a website to function correctly. For 
 
 Cookies used for marketing purposes such as tracking and analytics are considered **non-essential** - they might be essential to the _business_, but they are not essential to the visitor.
 
-## How do cookies actually work?
+## Let's get technical: How do cookies actually work?
 
-When you request a web page - let's say, `mhwelander.net` - that web page sends you a **response**. That response contains all the pieces of text required to display the page: HTML, CSS, scripts, images, fonts - and **cookies**, although you (and many legislative bodies) could argue that cookies are an _optional_ part of a healthy diet.
+When you request a web page - let's say, `mhwelander.net` - that web page sends you a **response** (usually some HTML). That response triggers a **_cascade_ of responses** to get any referenced stylesheets, scripts, images, and fonts required. You might also receive some 🍪**cookies**:
 
-[image]
+<figure class="centerFig w500">
+![](./images/2024/responses.png)
+<figCaption>Responses</figCaption>
+</figure>
 
-You can see this happening in [Chrome Developer Tools](https://developer.chrome.com/docs/devtools). Click `Option + ⌘ + I` (Mac) or `F12` (Windows), then click on the **Network** tab and refresh your page. Notice that the response from `mhwelander.net` includes various requests to get fonts, stylesheets, and script files:
+You can see the responses in [Chrome Developer Tools](https://developer.chrome.com/docs/devtools). Click `Option + ⌘ + I` (Mac) or `F12` (Windows), then click on the **Network** tab and refresh your page. Notice that the response from `mhwelander.net` includes various requests to get fonts, stylesheets, and script files:
 
 <figure class="centerFig">
-
+<div  data-lightbox="true">
 ![](./images/2024/network-request.png)
-
+</div>
 <figCaption>The network app</figCaption>
 </figure>
 
-### Seeing your cookies
+### I was promised cookies - where are they?
 
-Although cookies are not on that list on an obvious way (websites are not sending `23dDie8abc303.cookie` files), _one or more of the requests in that list_ is **delivering cookies to your browser**:
-
-[Highlight things that could be setting cookies]
-
- You can see the cookies your browser has stored for a particular site in **Application** tab of the Chrome Developer Tools, under **Storage > Cookies > [yourwebsite]**:
+Cookies are not part of the list of responses in the Network tab because websites do not send `23dDie8abc303.cookie` files. You can see the cookies your browser has stored for the site you are looking at in **Application** tab of the Chrome Developer Tools, under **Storage > Cookies > [yourwebsite]**:
 
 <figure class="centerFig">
-
+<div  data-lightbox="true">
 ![](./images/2024/application-cookies.png)
+</div>
 
 <figCaption>Cookies sent by mhwelander.net</figCaption>
 </figure>
 
-For example, the contents of my `_ga` cookie is `GA1.1.748647506.1724449994` - tasty stuff. Your browser then **stores** those cookies until:
+For example, the contents of my `_ga` cookie is `GA1.1.748647506.1724449994` - tasty stuff. These partcular cookies came from a script, but they can also come from a response header or an iframe.
 
-* They expire
-* You delete them
-* A script on the website (such as a cookie consent banner) deletes them - or at least the ones [that a script is capable of deleting](#)
+### Where cookies come from
 
-### Cookies come from a script or from the HTTP response header
+A website sets a cookie in several ways:
 
-If websites are not sending you `*.cookie` files, then how do they make? You can receive a cookie from a website in two ways:
+* Via an HTTP response header
+* Via Javascript
+* Via an iframe
 
-* In the HTTP response header (so fancy)
-* Set by some Javascript
+A response header can do certain things that Javascript cannot - such as setting or reading an HttpOnly cookie.
 
-### Cookies are included in the request header
+#### HTTP response header
 
-## First party and third party cookies
+Every request or response or request includes **headers**. [Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers) are **meta data** about the request - for example, the `Content-Type` header describes kind of content that was requested. This request returned an `image/webp`:
+
+<figure class="centerFig">
+<div   data-lightbox="true">
+![alt text](./images/2024/request-response.png)
+</div>
+<figCaption>HTTP-only cookies</figCaption>
+</figure>
+
+A response can also **set a cookie** via the [`Set-Cookie` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie). For example, when I load the Wikipedia homepage, _Forside_ (the document representing the actual homepage) sets several cookies with a `Set-Cookie` header:
+
+<figure class="centerFig">
+<div   data-lightbox="true">
+![alt text](./images/2024/cookie-header.png)
+</div>
+<figCaption>HTTP-only cookies</figCaption>
+</figure>
+
+These cookies show up under **Application > Cookies**:
+
+<figure class= "centerFig">
+<div   data-lightbox="true">
+![alt text](./images/2024/set-cookies.png)
+</div>
+<figCaption>HTTP-only cookies</figCaption>
+</figure>
+
+#### Javascript
+
+Javascript can set cookies - that includes scripts hosted on your own domain _and_ scripts from other domains, like Google Tag Manager:
+
+```html
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-12345667"></script>
+```
+
+You can event set a cookie by writing some Javascript in the Console tab. This script sets a cooke named `martina` with the value `A cookie value`:
+
+<figure class= "centerFig">
+<div   data-lightbox="true">
+![alt text](./images/2024/set-cookie-script.png)
+</div>
+<figCaption>A cookie that does nothing</figCaption>
+</figure>
+
+This script creates a genuine cookie - it appears alongside other cookies in the Applications tab:
+
+<figure class= "centerFig">
+<div   data-lightbox="true">
+![alt text](./images/2024/set-cookies-js.png)
+</div>
+<figCaption>I'm a real cookie</figCaption>
+</figure>
+
+* Cannot create or access HttpOnly cookies
+* Cannot create cookies from a different domain
+
+#### Iframes
+
+## HttpOnly and regular cookies
+
+## First-party and third-party cookies
+
+### First-party cookies
+
+### Third-party cookies
+
+On many websites, particularly after you accept non-essential cookies, you will suddenly see cookies from a list of _other_ domains - often domains you do not recognize or have never visited. Skip on down to the section about [third-party cookies](#third-party-cookies) if you're itching to find out where they came from:
+
+<figure class= "centerFig">
+<div   data-lightbox="true">
+![alt text](./images/2024/third-party.png)
+</div>
+<figCaption>Where did these come from?</figCaption>
+</figure>
 
 http response header - set third party cookie
 
@@ -164,7 +236,3 @@ Ah, well.. 'first party cookie' means 'cookie where the domain is mhwelander.net
 Isn't that the same thing?
 
 Yeah. Kind of. :) 
-
-## HTTP-Only and regular cookies
-
-## What is all the fuss about cookies?
