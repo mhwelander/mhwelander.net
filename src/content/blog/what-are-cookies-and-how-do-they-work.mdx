@@ -87,20 +87,17 @@ By contrast, **session cookies** (a cookie issued without an expiration date) la
 
 Technically speaking, the **website owner** decides which cookies a website issues to visitors - but it's not always obvious where the cookies are coming from. Cookies can created by:
 
-* The **website code** itself (Javascript or server-side code)
-* An **embedded script** (for example, Google Analytics)
-* An **embedded iframe** (for example, a YouTube video)
+* The **website itself** - through server-side code or JavaScript
+* An **embedded asset from another website**, such as a script, image, or iframe
 
-I was very surprised by the number of cookies set by a YouTube embed! If you have a large website with user-generated content, it can be really difficult to know where all the cookies are coming from.
+A cookie set by a different website than the one you are currently visiting is called a ⚠️**third party or 'cross-site' cookie** - [more on them later later](#), and why they can [come across as a little creepy](https://developer.mozilla.org/en-US/docs/Web/Privacy/Third-party_cookies#what_is_the_problem_with_third-party_cookies). Even embedding a YouTube video on your website will set several cookies.
 
 <figure class="centerFig w500">
 ![](./images/2024/cookies-drawing-7.png)
-<figCaption>Surprise cookies!</figCaption>
+<figCaption>Surprise cookies from a YouTube embed!</figCaption>
 </figure>
 
-<Block class="warning">
-This might present a problem if _you_ (and not the originator of the script) are legally obligated to document all cookies and provide a way for vistors to opt out of processing (for example, by declining tracking cookies).
-</Block>
+Safari blocks third-party cookies by default and [Google Chrome is wrestling with a solution to the problem](https://developers.google.com/privacy-sandbox/cookies/prepare/overview#preserve).
 
 ### Do websites really need cookies?
 
@@ -128,7 +125,7 @@ You can see the responses in [Chrome Developer Tools](https://developer.chrome.c
 
 ### I was promised cookies - where are they?
 
-Cookies are not part of the list of responses in the Network tab because websites do not send `23dDie8abc303.cookie` files. You can see the cookies your browser has stored for the site you are looking at in **Application** tab of the Chrome Developer Tools, under **Storage > Cookies > [yourwebsite]**:
+Cookies are not separate requests - they are set by a request header or by Javascript. You can see the cookies your browser has stored for the site you are looking at in **Application** tab of the Chrome Developer Tools, under **Storage > Cookies > [yourwebsite]**:
 
 <figure class="centerFig">
 <div  data-lightbox="true">
@@ -138,7 +135,15 @@ Cookies are not part of the list of responses in the Network tab because website
 <figCaption>Cookies sent by mhwelander.net</figCaption>
 </figure>
 
-For example, the contents of my `_ga` cookie is `GA1.1.748647506.1724449994` - tasty stuff. These partcular cookies came from a script, but they can also come from a response header or an iframe.
+If a website contains **iframes**, cookies are organised by which 'frame' (including your domain) is using the cookie in a request or a response:
+
+<figure class="centerFig w400">
+<div  data-lightbox="true">
+![](./images/2024/iframe-cookies.png)
+</div>
+
+<figCaption>Cookies used by iframes</figCaption>
+</figure>
 
 ### Where cookies come from
 
@@ -146,13 +151,12 @@ A website sets a cookie in several ways:
 
 * Via an HTTP response header
 * Via Javascript
-* Via an iframe
 
-A response header can do certain things that Javascript cannot - such as setting or reading an HttpOnly cookie.
+A response header can do certain things that Javascript cannot - such as creating a third-party cookie, or marking a cookie as HttpOnly.
 
 #### HTTP response header
 
-Every request or response or request includes **headers**. [Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers) are **meta data** about the request - for example, the `Content-Type` header describes kind of content that was requested. This request returned an `image/webp`:
+All requests and responses includes **headers**. [Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers) are **meta data** about the request - for example, the `Content-Type` header describes kind of content that was requested. The following request returns an `image/webp`:
 
 <figure class="centerFig">
 <div   data-lightbox="true">
@@ -161,7 +165,7 @@ Every request or response or request includes **headers**. [Headers](https://dev
 <figCaption>HTTP-only cookies</figCaption>
 </figure>
 
-A response can also **set a cookie** via the [`Set-Cookie` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie). For example, when I load the Wikipedia homepage, _Forside_ (the document representing the actual homepage) sets several cookies with a `Set-Cookie` header:
+A response can also **set a cookie** via the [`Set-Cookie` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie). You can set a cookie with a response from a document, or a script, or even an image. When I load the Wikipedia homepage, _Forside_ document sets several cookies:
 
 <figure class="centerFig">
 <div   data-lightbox="true">
@@ -208,15 +212,7 @@ This script creates a genuine cookie - it appears alongside other cookies in the
 * Cannot create or access HttpOnly cookies
 * Cannot create cookies from a different domain
 
-#### Iframes
-
-## HttpOnly and regular cookies
-
 ## First-party and third-party cookies
-
-### First-party cookies
-
-### Third-party cookies
 
 On many websites, particularly after you accept non-essential cookies, you will suddenly see cookies from a list of _other_ domains - often domains you do not recognize or have never visited. Skip on down to the section about [third-party cookies](#third-party-cookies) if you're itching to find out where they came from:
 
@@ -227,7 +223,12 @@ On many websites, particularly after you accept non-essential cookies, you will 
 <figCaption>Where did these come from?</figCaption>
 </figure>
 
-http response header - set third party cookie
+#### Iframes
+
+
+
+## HttpOnly and regular cookies
+
 
 ### Why does the Google Analytics script say mhwelander.net and not google.com?
 
