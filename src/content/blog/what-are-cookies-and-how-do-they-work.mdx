@@ -183,24 +183,31 @@ These cookies show up under **Application > Cookies**:
 <figCaption>HTTP-only cookies</figCaption>
 </figure>
 
-#### Javascript
+In this particular example, all cookies are **first-party** - they come from Wikipedia itself. However, if you reference an external script or image, the response from that resource can include a `Set-Cookie` header that sets a **third-party cookie**:
 
-Javascript can set cookies - that includes scripts hosted on your own domain _and_ scripts from other domains, like Google Tag Manager:
+<figure class="centerFig w400">
+![](./images/2024/third-party-cookies.PNG)
+<figCaption>A sneaky third-party cookie - where did you come from?</figCaption>
+</figure>
 
-```html
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-12345667"></script>
-```
-
-You can event set a cookie by writing some Javascript in the Console tab. This script sets a cooke named `martina` with the value `A cookie value`:
+For example, [TikTok](https://ads.tiktok.com/help/article/tiktok-pixel) and [Snapchat](https://businesshelp.snapchat.com/s/topic/0TO0y000000YVdJGAW/snap-pixel?language=en_US) use a **single pixel** to set third-party cookies. This cookie is then accessed by their tracking script - on your website, and **on any website you visit that has the tracking script**.
 
 <figure class= "centerFig">
 <div   data-lightbox="true">
-![alt text](./images/2024/set-cookie-script.png)
+![alt text](./images/2024/snapchat-cookies.png)
 </div>
-<figCaption>A cookie that does nothing</figCaption>
+<figCaption>Cookies from Snapchat</figCaption>
 </figure>
 
-This script creates a genuine cookie - it appears alongside other cookies in the Applications tab:
+#### Javascript
+
+Javascript can also set cookies - this example sets a cookie named `martina` that expires in 2030 (in reality, browsers have a max age for cookies):
+
+```js
+document.cookie = "martina=a cookie value;expires=Thu, 18 Dec 2030 12:00:00 UTC"
+```
+
+You can paste this one line into the **Console** tab and press enter to create a genuine cookie - it will appear alongside other cookies in the Applications tab:
 
 <figure class= "centerFig">
 <div   data-lightbox="true">
@@ -209,19 +216,39 @@ This script creates a genuine cookie - it appears alongside other cookies in the
 <figCaption>I'm a real cookie</figCaption>
 </figure>
 
-* Cannot create or access HttpOnly cookies
-* Cannot create cookies from a different domain
 
-## First-party and third-party cookies
+**Any script** can create a cookie. That includes scripts hosted on your own domain _and_ scripts from other domains, like Google Tag Manager:
 
-On many websites, particularly after you accept non-essential cookies, you will suddenly see cookies from a list of _other_ domains - often domains you do not recognize or have never visited. Skip on down to the section about [third-party cookies](#third-party-cookies) if you're itching to find out where they came from:
+```html
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-12345667"></script>
+```
+
+However, scripts can _only_ create cookies for the current domain - in other words, they can only create **first-party cookies**. If you attempt to run the following in the Console tab on mhwelander.net, the cookie will not be set - the domain does not match the website you are on:
+
+```js
+document.cookie = "martina=a cookie value;expires=Thu, 18 Dec 2030 12:00:00 UTC;domain=notmhwelander.net"
+```
+
+Even the Google Analytics script creates a first-party cookie - the domain is mhwelander.net:
 
 <figure class= "centerFig">
 <div   data-lightbox="true">
-![alt text](./images/2024/third-party.png)
+![alt text](./images/2024/cookie-domains.png)
 </div>
-<figCaption>Where did these come from?</figCaption>
+<figCaption>I'm a real cookie</figCaption>
 </figure>
+
+This may seem counterintuitive - Google Analytics is a third-party script, so why isn't it creating a third-party cookie?
+
+## Third-party cookies
+
+On many websites, particularly after you accept non-essential cookies, you will suddenly see cookies from a list of _other_ domains - often domains you do not recognize or have never visited.  These are **third party or 'cross-site' cookies**.
+
+<figure class="centerFig w400">
+![](./images/2024/third-party-cookie.PNG)
+<figCaption>A sneaky third-party cookie - where did you come from?</figCaption>
+</figure>
+
 
 #### Iframes
 
