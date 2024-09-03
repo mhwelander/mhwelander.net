@@ -238,7 +238,7 @@ Even the Google Analytics script creates a first-party cookie - the domain is mh
 <figCaption>I'm a real cookie</figCaption>
 </figure>
 
-This may seem counterintuitive - Google Analytics is a third-party script, so why isn't it creating a third-party cookie?
+This may seem counterintuitive - Google Analytics is a third-party script, so why isn't it creating a third-party cookie? Let's dig into what a third-party cookie actually is, and why it matters.
 
 ## Third-party cookies
 
@@ -249,18 +249,21 @@ On many websites, particularly after you accept non-essential cookies, you will 
 <figCaption>A sneaky third-party cookie - where did you come from?</figCaption>
 </figure>
 
+The thing that makes them third-party cookies is this: <span class="highlight">**the cookie domain does not match the current site.**</span>
 
-#### Iframes
+That's it. It is the **context in which a cookie appears** that makes it third-party or first-party; the cookie itself is not inherently third or first party.
 
+### Who is summonining these cookies?
 
+I visited ███████.com, accepted all cookies, and looked in the Application tab - _most_ of the cookies are third party:
 
-## HttpOnly and regular cookies
+<figure class= "centerFig">
+<div   data-lightbox="true">
+![alt text](./images/2024/third-party-list.png)
+</div>
+<figCaption>Third party cookies on ███████.com</figCaption>
+</figure>
 
+I have never visited doubleclick.net.
 
-### Why does the Google Analytics script say mhwelander.net and not google.com?
-
-Ah, well.. 'first party cookie' means 'cookie where the domain is mhwelander.net'. 
-
-Isn't that the same thing?
-
-Yeah. Kind of. :) 
+## HttpOnly cookies
