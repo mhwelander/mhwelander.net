@@ -52,7 +52,7 @@ Without a cookie (or some other online identifier), a website cannot identify yo
 
 ### What is a cookie used for?
 
-Cookies by themselves **don't really do anything**; the website and the browser pass them back and forth in a not-so-thrilling game of virtual table tennis. However, once a website can identify a visitor, it can [use a tracker like Google Analytics](https://www.zipy.ai/blog/website-tracking-tools) to string disparate activities together into a cohesive journey.
+Cookies by themselves <span class="highlight">**don't really do anything**</span>; the website and the browser pass them back and forth in a not-so-thrilling game of virtual table tennis. However, once a website can identify a visitor, it can [use a tracker like Google Analytics](https://www.zipy.ai/blog/website-tracking-tools) to string disparate activities together into a cohesive journey.
 
 A tracker can show the path you took through the website, how long you spent on each page, and maybe even which components you interacted with and how far you scrolled. Companies can use this data to **personalize your experience** and **monitor trends** - if you spent three sessions looking at 🐝beekeeping paraphenalia, the website might start to suggest that you buy the discounted Beginner Beekeper Bundle.
 
@@ -190,7 +190,7 @@ In this particular example, all cookies are **first-party** - they come from Wik
 <figCaption>A sneaky third-party cookie - where did you come from?</figCaption>
 </figure>
 
-For example, [TikTok](https://ads.tiktok.com/help/article/tiktok-pixel) and [Snapchat](https://businesshelp.snapchat.com/s/topic/0TO0y000000YVdJGAW/snap-pixel?language=en_US) use a **single pixel** to set third-party cookies. This cookie is then accessed by their tracking script - on your website, and **on any website you visit that has the tracking script**.
+For example, [TikTok](https://ads.tiktok.com/help/article/tiktok-pixel) and [Snapchat](https://businesshelp.snapchat.com/s/topic/0TO0y000000YVdJGAW/snap-pixel?language=en_US) set third-party cookies **when you load their tracking script**. This cookie is then accessed by that tracking script - on your website, and on any website you visit that has the tracking script.
 
 <figure class= "centerFig">
 <div   data-lightbox="true">
@@ -249,13 +249,9 @@ On many websites, particularly after you accept non-essential cookies, you will 
 <figCaption>A sneaky third-party cookie - where did you come from?</figCaption>
 </figure>
 
-The thing that makes them third-party cookies is this: <span class="highlight">**the cookie domain does not match the current site.**</span>
+The thing that makes them third-party cookies is this: <span class="highlight">**the cookie domain does not match the current site.**</span> That's it.
 
-That's it. It is the **context in which a cookie appears** that makes it third-party or first-party; the cookie itself is not inherently third or first party.
-
-### Who is summonining these cookies?
-
-I visited ███████.com, accepted all cookies, and looked in the Application tab - _most_ of the cookies are third party:
+I visited ███████.com, accepted all cookies, and looked in the Application tab - notice that _most_ of the cookies are from other domains and are therefore third-party:
 
 <figure class= "centerFig">
 <div   data-lightbox="true">
@@ -264,6 +260,81 @@ I visited ███████.com, accepted all cookies, and looked in the App
 <figCaption>Third party cookies on ███████.com</figCaption>
 </figure>
 
-I have never visited doubleclick.net.
+It is the **context in which a cookie appears** that makes it third-party or first-party; the cookie itself is not inherently third or first party.
 
-## HttpOnly cookies
+### Who is setting these cookies?
+
+A third-party cookie is set by a `Set-Cookie` header in a response from some <span class="highlight">**embedded resource from another domain**</span>. For example, the `_ttp` cookie (TikTok) is set by loading the `events.js` script from analytics.tiktok.com (the cookie is _not_ set by the Javascript itself).
+
+You see this by right-clicking on a cookie and choosing **Show Requests With This Cookie** - the request to `events.js` sets the cookie through the `Set-Cookie` header:
+
+<figure class= "centerFig">
+<div   data-lightbox="true">
+![alt text](./images/2024/using-the-cookie-1.png)
+</div>
+<figCaption>A cookie set by the `Set-Cookie` header</figCaption>
+</figure>
+
+### How are the cookies being used?
+
+Imagine that I arrived on a website by clicking an ad on TikTok. The script on the website sets a cookie, and probably associates that cookie with my TikTok handle.
+
+The tracking script can send events to TikTok **about my behavior on that website** after seeing the ad - what did I look at? Did I buy something? Did I register? All of this behavioral data is linked to my cookie, and it:
+
+* Helps the website track the effectiveness of their ad campaigns
+* Provides TikTok with behavioral data that can help them target ads more effectively
+
+[Image - tiktok to website to cookie]
+
+More specifically, it works like this: the other requests that use the `_ttp` cookie (`pixel` and `act`) are initiated by a script file named `main.*.js`. They send the cookie _to_ analytics.tiktok.com:
+
+<figure class= "centerFig">
+<div   data-lightbox="true">
+![alt text](./images/2024/ping-use.png)
+</div>
+<figCaption>Third party cookies on ███████.com</figCaption>
+</figure>
+
+These requests include the `_ttp` cookie in the `Cookies` request header:
+
+<figure class= "centerFig">
+<div   data-lightbox="true">
+![alt text](./images/2024/using-the-cookie.png)
+</div>
+<figCaption>Third party cookies on ███████.com</figCaption>
+</figure>
+
+The request _also_ includes information about my activity in the request payload:
+
+<figure class= "centerFig">
+<div   data-lightbox="true">
+![alt text](./images/2024/payload.png)
+</div>
+<figCaption>Third party cookies on ███████.com</figCaption>
+</figure>
+
+If you're thinking: <span class="highlight">this could all be done with a **first-party cookie**</span>, well, you're right. It absolutely could be.
+
+### What exactly is the role of _third-party_ cookies in this?
+
+You bring your TikTok cookie with you to <span class="highlight">**any website** that includes the TikTok tracking script</span>. When another website sends a request to analytics.tiktok.com, your browser **automatically** includes your `_ttp` cookie in the `Cookies` request header.
+
+[Image - website / cookie / TikTok ID]
+
+TikTok now receives behavioral data about **the same person** across two **different websites**. Or fifty websites.
+
+This is _great_ for TikTok - for the lifetime of that cookie, they can gather data about your behavior across the internet and use that target ads more effectively.
+
+<Block class="note">
+Using TikTok as an example - all ad providers do something like this.
+</Block>
+
+## What's the big deal?
+
+### Well, it's a bit creepy
+
+### Legislation
+
+### Browsers
+
+Some browsers block third party cookies
