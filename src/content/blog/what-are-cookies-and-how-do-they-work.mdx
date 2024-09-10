@@ -27,21 +27,21 @@ This blog post is about how cookies work - specifically _cookies_, and specifica
 
 ## What is a cookie?
 
-A cookie is a **piece of text** sent by a website to your browser that **uniquely identifies you** to that website. They have a name (`_X`) and a weird-looking value (`902A4Y`):
+A cookie is a **piece of text** sent by a website to your browser that **uniquely identifies you** to that website. They have (at minimum) a name (`X`), a weird-looking value (`902A4Y`), and a domain (`mhwelander.net`):
 
 <figure class="centerFig w300">
 ![](./images/2024/cookies-drawing-1.png)
 <figCaption>"Hi, I'm your cookie"</figCaption>
 </figure>
 
-Your browser **stores the cookie** when it receives it, and includes it in subsequent requests to that website [for as long as that cookie lasts](#how-long-does-a-cookie-last):
+Your browser **stores the cookie** in a backpack of cookies, and includes it in subsequent requests to that website _or_ that website's resources (images, scripts) [for as long as that cookie lasts](#how-long-does-a-cookie-last):
 
 <figure class="centerFig w600">
 ![](./images/2024/cookie-drawing-3.png)
 <figCaption>A website recognizing an old friend</figCaption>
 </figure>
 
-This means that the website has a **mechanism by which to identify you** between page requests and (depending on the type of cookie) between browsing sessions:
+Including relevant cookies in requests is just **something that a browser does**. If it sees that there's a cookie from `mhwelander.net` in your backpack, it will include that cookie in <span class="highlight">**all and any requests**</span> to `mhwelander.net` URLs. The website now has a  mechanism by which to identify you between page requests and (depending on the type of cookie) between browsing sessions:
 
 <figure class="centerFig w400">
 ![](./images/2024/cookie-drawing-4.png)
@@ -52,7 +52,19 @@ Without a cookie (or some other online identifier), a website cannot identify yo
 
 ### What is a cookie used for?
 
-Cookies by themselves <span class="highlight">**don't really do anything**</span>; the website and the browser pass them back and forth in a not-so-thrilling game of virtual table tennis. However, once a website can identify a visitor, it can [use a tracker like Google Analytics](https://www.zipy.ai/blog/website-tracking-tools) to string disparate activities together into a cohesive journey.
+Cookies by themselves <span class="highlight">**don't really do anything**</span>; the website and the browser pass them back and forth in a not-so-thrilling game of virtual table tennis. However, once a website can identify a visitor, it can use a script to **track that visitor's activity**.
+
+<figure class="centerFig w300">
+![](./images/2024/cookie-shutter-bug.png)
+<figCaption>A lil' tracking script, ready to capture the action</figCaption>
+</figure>
+
+There is a difference between wearing a nametag (having a cookie), and wearing a nametag whilst someone observes and records that you eat boogers (read a blog post about cookies).
+
+<figure class="centerFig w600">
+![](./images/2024/cookie-snot.png)
+<figCaption>Captured: You, eating snot</figCaption>
+</figure>
 
 A tracker can show the path you took through the website, how long you spent on each page, and maybe even which components you interacted with and how far you scrolled. Companies can use this data to **personalize your experience** and **monitor trends** - if you spent three sessions looking at 🐝beekeeping paraphenalia, the website might start to suggest that you buy the discounted Beginner Beekeper Bundle.
 
@@ -61,11 +73,11 @@ A tracker can show the path you took through the website, how long you spent on 
 <figCaption>A path through the content</figCaption>
 </figure>
 
-Without a cookie, these actions are disconnected. "Someone" from Denmark looked at manual honey extractors and "someone" from Denmark for spent 10 minutes reading a single page about carpets. Is it the same person? Who knows.
+Without a cookie, these actions are disconnected. "Someone" from Denmark looked at manual honey extractors and "someone" from Denmark for spent 10 minutes reading a single page about carpets. Is it the same person? Who knows. Is it booger lady? Maybe.
 
-<Block class="note">
-**Is it technically possible to track visitors by IP address?** An IP address does not necessarily identify an individual - it identifies a node on a network, which _could_ be a personal device - or it could be the router in an office.  Furthermore, most IP addresses are dynamic (they can change).
-</Block>
+<span class="highlight">**But does it really matter**?</span> On this website, maybe not - if you consent, I give you a cookie and track which pages you look at on this site _only_. So far, not excessively creepy (you can of course still opt out of tracking - just click the prefernces link in the footer).
+
+But what if you brought that cookie with you to **hundreds of thousands of websites** with that **same tracking script**? Now it's watching you shop, book appointments, and browse listicles about why cats suck (how dare you). This is the potential threat posed by [third-party cookies with wide reach](#third-party-cookies).
 
 ### How long does a cookie last?
 
@@ -73,10 +85,10 @@ In my house? Less than three minutes.
 
 In a browser, however, a **persistent cookie** lasts until you delete manually it, or until it expires. The website that issues the cookie sets the expiry date, _but_:
 
-* Most browsers limit the max age ([Chrome's upper limit is 400 days](https://developer.chrome.com/blog/cookie-max-age-expires))
+* Most browsers limit the max age ([Chrome's upper limit is 400 days](https://developer.chrome.com/blog/cookie-max-age-expires)) and may have additional rules that affect cookie expiry date
 * Expiry dates must follow any regulation/s in the visitor's country
 
-By contrast, **session cookies** (a cookie issued without an expiration date) last until you close the browser.
+By contrast, a true **session cookie** (a cookie issued without an expiration date) lasts until you close the browser.
 
 <figure class="centerFig w400">
 ![](./images/2024/cookies-drawing-5.png)
@@ -88,16 +100,9 @@ By contrast, **session cookies** (a cookie issued without an expiration date) la
 Technically speaking, the **website owner** decides which cookies a website issues to visitors - but it's not always obvious where the cookies are coming from. Cookies can created by:
 
 * The **website itself** - through server-side code or JavaScript
-* An **embedded asset from another website**, such as a script, image, or iframe
+* An **embedded resource from another website**, such as a script, image, or iframe
 
-A cookie set by a different website than the one you are currently visiting is called a ⚠️**third party or 'cross-site' cookie** - [more on them later later](#), and why they can [come across as a little creepy](https://developer.mozilla.org/en-US/docs/Web/Privacy/Third-party_cookies#what_is_the_problem_with_third-party_cookies). Even embedding a YouTube video on your website will set several cookies.
-
-<figure class="centerFig w500">
-![](./images/2024/cookies-drawing-7.png)
-<figCaption>Surprise cookies from a YouTube embed!</figCaption>
-</figure>
-
-Safari blocks third-party cookies by default and [Google Chrome is wrestling with a solution to the problem](https://developers.google.com/privacy-sandbox/cookies/prepare/overview#preserve).
+A cookie set by a different website than the one you are currently visiting is called a **third party or 'cross-site' cookie**. Even if you didn't visit their website, the have now set a cookie and tracked your activity.
 
 ### Do websites really need cookies?
 
@@ -114,7 +119,7 @@ When you request a web page - let's say, `mhwelander.net` - that web page sends 
 <figCaption>Responses</figCaption>
 </figure>
 
-You can see the responses in [Chrome Developer Tools](https://developer.chrome.com/docs/devtools). Click `Option + ⌘ + I` (Mac) or `F12` (Windows), then click on the **Network** tab and refresh your page. Notice that the response from `mhwelander.net` includes various requests to get fonts, stylesheets, and script files:
+You can see the responses in [Chrome Developer Tools](https://developer.chrome.com/docs/devtools). Click `Option + ⌘ + I` (Mac) or `F12` (Windows), then click on the **Network** tab and refresh your page. Notice that the response from `mhwelander.net` includes various requests to get fonts, stylesheets, script files, and iframes:
 
 <figure class="centerFig">
 <div  data-lightbox="true">
@@ -125,7 +130,7 @@ You can see the responses in [Chrome Developer Tools](https://developer.chrome.c
 
 ### I was promised cookies - where are they?
 
-Cookies are not separate requests - they are set by a request header or by Javascript. You can see the cookies your browser has stored for the site you are looking at in **Application** tab of the Chrome Developer Tools, under **Storage > Cookies > [yourwebsite]**:
+Cookies are not separate requests - they are set by the `Set-Cookie` header of a request, or by Javascript. You can see the cookies your browser has stored for the site you are looking at in **Application** tab of the Chrome Developer Tools, under **Storage > Cookies > [yourwebsite]**:
 
 <figure class="centerFig">
 <div  data-lightbox="true">
@@ -135,7 +140,7 @@ Cookies are not separate requests - they are set by a request header or by Javas
 <figCaption>Cookies sent by mhwelander.net</figCaption>
 </figure>
 
-If a website contains **iframes**, cookies are organised by which 'frame' (including your domain) is using the cookie in a request or a response:
+If a website contains **iframes**, cookies are organised by which 'frame' (including your website, which is the 'top' frame) is using the cookie in a request or a response:
 
 <figure class="centerFig w400">
 <div  data-lightbox="true">
@@ -145,12 +150,14 @@ If a website contains **iframes**, cookies are organised by which 'frame' (inclu
 <figCaption>Cookies used by iframes</figCaption>
 </figure>
 
+An iframe is a reference to a third-party resource - just like an image or a script - and [can set cookies](https://prototyp.digital/blog/how-to-set-cookies-from-an-embedded-iframe-2) if the parent frame allows it.
+
 ### Where cookies come from
 
-A website sets a cookie in several ways:
+Cookies can come from two places:
 
-* Via an HTTP response header
-* Via Javascript
+* [HTTP response headers](#http-response-header)
+* [Javascript](#javascript)
 
 A response header can do certain things that Javascript cannot - such as creating a third-party cookie, or marking a cookie as HttpOnly.
 
@@ -183,21 +190,7 @@ These cookies show up under **Application > Cookies**:
 <figCaption>HTTP-only cookies</figCaption>
 </figure>
 
-In this particular example, all cookies are **first-party** - they come from Wikipedia itself. However, if you reference an external script or image, the response from that resource can include a `Set-Cookie` header that sets a **third-party cookie**:
-
-<figure class="centerFig w400">
-![](./images/2024/third-party-cookies.PNG)
-<figCaption>A sneaky third-party cookie - where did you come from?</figCaption>
-</figure>
-
-For example, [TikTok](https://ads.tiktok.com/help/article/tiktok-pixel) and [Snapchat](https://businesshelp.snapchat.com/s/topic/0TO0y000000YVdJGAW/snap-pixel?language=en_US) set third-party cookies **when you load their tracking script**. This cookie is then accessed by that tracking script - on your website, and on any website you visit that has the tracking script.
-
-<figure class= "centerFig">
-<div   data-lightbox="true">
-![alt text](./images/2024/snapchat-cookies.png)
-</div>
-<figCaption>Cookies from Snapchat</figCaption>
-</figure>
+In this particular example, all cookies are **first-party** - they come from `wikipedia.com`. However, the `Set-Cookie` header can also be used to set a **third-party cookie**.
 
 #### Javascript
 
@@ -238,7 +231,9 @@ Even the Google Analytics script creates a first-party cookie - the domain is mh
 <figCaption>I'm a real cookie</figCaption>
 </figure>
 
-This may seem counterintuitive - Google Analytics is a third-party script, so why isn't it creating a third-party cookie? Let's dig into what a third-party cookie actually is, and why it matters.
+### HTTPOnly cookies
+
+Cookies set by the `Set-Cookies` reponse header _can be_ [set to HttpOnly](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#httponly). This means that a cookie **can only be accessed by the server** (included in the `Cookies` request header), _not_ by Javascript. Reqests initiated _by_ Javascript will still include this cookie, but the script itself cannot access it.
 
 ## Third-party cookies
 
@@ -249,7 +244,7 @@ On many websites, particularly after you accept non-essential cookies, you will 
 <figCaption>A sneaky third-party cookie - where did you come from?</figCaption>
 </figure>
 
-The thing that makes them third-party cookies is this: <span class="highlight">**the cookie domain does not match the current site.**</span> That's it.
+The thing that makes them third-party cookies is this: <span class="highlight">**the cookie domain does not match the current site.**</span> That's it. If you include a `mhwelander.net` resource that sets a cookie on _your_ website, and the domain of that cookie is `mhwelander.net`, it is a third-party cookie.
 
 I visited ███████.com, accepted all cookies, and looked in the Application tab - notice that _most_ of the cookies are from other domains and are therefore third-party:
 
@@ -262,11 +257,16 @@ I visited ███████.com, accepted all cookies, and looked in the App
 
 It is the **context in which a cookie appears** that makes it third-party or first-party; the cookie itself is not inherently third or first party.
 
-### Who is setting these cookies?
+### Where do they come from and how are they used?
 
-A third-party cookie is set by a `Set-Cookie` header in a response from some <span class="highlight">**embedded resource from another domain**</span>. For example, the `_ttp` cookie (TikTok) is set by loading the `events.js` script from analytics.tiktok.com (the cookie is _not_ set by the Javascript itself).
+When a website owner <span class="highlight">**embeds a resource from another website**</span>, such as an image or a script, the **response** from that resource can include a `Set-Cookie` header. This sets a **third-party cookie** - it comes from a website you might never have visited.
 
-You see this by right-clicking on a cookie and choosing **Show Requests With This Cookie** - the request to `events.js` sets the cookie through the `Set-Cookie` header:
+<figure class="centerFig w400">
+![](./images/2024/third-party-cookies.PNG)
+<figCaption>A sneaky third-party cookie - where did you come from?</figCaption>
+</figure>
+
+For example, the `_ttp` cookie (TikTok) is set by loading the `events.js` script from analytics.tiktok.com (the cookie is set by the request,  _not_ the Javascript itself).
 
 <figure class= "centerFig">
 <div   data-lightbox="true">
@@ -275,66 +275,67 @@ You see this by right-clicking on a cookie and choosing **Show Requests With Thi
 <figCaption>A cookie set by the `Set-Cookie` header</figCaption>
 </figure>
 
-### How are the cookies being used?
+The `Set-Cookie` response header a third-party cookie - your browser stores it. The tracking script sends information about your activities back home to the Planet TikTok - which automatically includes your cookie in the `Cookies` request header, because it's phoning home to `tiktok.com`, where the cookie came from. Here's the critical part:
 
-Imagine that I arrived on a website by clicking an ad on TikTok. The script on the website sets a cookie, and probably associates that cookie with my TikTok handle.
+> <span class="highlight">**any other website** you visit with the TikTok tracking script will see your TikTok cookie</span>
 
-The tracking script can send events to TikTok **about my behavior on that website** after seeing the ad - what did I look at? Did I buy something? Did I register? All of this behavioral data is linked to my cookie, and it:
-
-* Helps the website track the effectiveness of their ad campaigns
-* Provides TikTok with behavioral data that can help them target ads more effectively
-
-[Image - tiktok to website to cookie]
-
-More specifically, it works like this: the other requests that use the `_ttp` cookie (`pixel` and `act`) are initiated by a script file named `main.*.js`. They send the cookie _to_ analytics.tiktok.com:
-
-<figure class= "centerFig">
-<div   data-lightbox="true">
-![alt text](./images/2024/ping-use.png)
-</div>
-<figCaption>Third party cookies on ███████.com</figCaption>
-</figure>
-
-These requests include the `_ttp` cookie in the `Cookies` request header:
-
-<figure class= "centerFig">
-<div   data-lightbox="true">
-![alt text](./images/2024/using-the-cookie.png)
-</div>
-<figCaption>Third party cookies on ███████.com</figCaption>
-</figure>
-
-The request _also_ includes information about my activity in the request payload:
-
-<figure class= "centerFig">
-<div   data-lightbox="true">
-![alt text](./images/2024/payload.png)
-</div>
-<figCaption>Third party cookies on ███████.com</figCaption>
-</figure>
-
-If you're thinking: <span class="highlight">this could all be done with a **first-party cookie**</span>, well, you're right. It absolutely could be.
-
-### What exactly is the role of _third-party_ cookies in this?
-
-You bring your TikTok cookie with you to <span class="highlight">**any website** that includes the TikTok tracking script</span>. When another website sends a request to analytics.tiktok.com, your browser **automatically** includes your `_ttp` cookie in the `Cookies` request header.
-
-[Image - website / cookie / TikTok ID]
-
-TikTok now receives behavioral data about **the same person** across two **different websites**. Or fifty websites.
-
-This is _great_ for TikTok - for the lifetime of that cookie, they can gather data about your behavior across the internet and use that target ads more effectively.
+This means that you can be tracked as a single individual across the **hundreds of thousands** of websites that implement this script. TikTok isn't exactly an obscure advertising platform. 
 
 <Block class="note">
-Using TikTok as an example - all ad providers do something like this.
+I am not picking on TikTok specifically - all advertising platforms that use third-party cookies work this way.
 </Block>
 
-## What's the big deal?
+And remember - _we invite these cookies_ by adding tracking scripts to our websites. We invite them, and we give them a way to phone home and gossip about us:
 
-### Well, it's a bit creepy
+<figure class="centerFig w500">
+![](./images/2024/cookie-embassy.png)
+<figCaption>This Snapchat cookie is invited</figCaption>
+</figure>
 
-### Legislation
+And frankly, for advertising purposes - third-party cookies are great! By collecting data about an individual across many, many websites, advertising platforms are able to target ads with **incredible accuracy**. This is great for anyone who uses the platform - and great for the platform, because we pay them.
+
+But it's a bit creepy. In fact, it can be outright damaging.
+
+## What's the big deal with _cookies_, specifically?
+
+If you steal my laptop and look at my cookies, you won't get any data _out of the cookie_ - whether they are first or third-party cookie.
+<figure class="centerFig w300">
+![](./images/2024/cookies-drawing-1.png)
+<figCaption>"Oooh, some random numbers, how SCANDALOUS"</figCaption>
+</figure>
+
+But a cookie, particularly a _third-party or cross-site cookie_, can make it **easier** to compromise your privacy online:
+
+> There is now a _lot_ of data about your activities across the internet stored by large ad platforms, and <span class="highlight">it is all linked together by a single identifier</span>
+
+And here's the thing about all of this data:
+
+* You don't know **exactly what data** has been collected, and **people mess up**. A misconfigured script on Mr. Bob's Nail Salon might have sent your name and email address to a third-party tracking service - it probably violates the terms of said service, but Mr. Bob made an honest mistake.
+* Data breaches happen all the time.
+
+This might not matter to you if you're booking a nail appointment at Mr Bob's. However, it probably _does_ matter if the same tracking script later [records you downloading the patient handbook for HIV from a hospital website](https://www.theguardian.com/society/2023/may/27/nhs-data-breach-trusts-shared-patient-details-with-facebook-meta-without-consent).
+
+### Privacy legislation
+
+* Opt in to cookies (not mentioned explicitly in GDPR - says 'online identifier')
+* Rights to
 
 ### Browsers
 
+* Blocking third party cookies
+* 
+
 Some browsers block third party cookies
+
+
+## No cookies, no problems?
+
+No, not really.
+
+* Cookie-less tracking just uses another identifier (albeit not cross-site) to track you - cannot track between sessions, but can track per session
+* Anonymous tracking - still see what a person did. Oh this person visited the MartinaIsCool profile 20 times in each of their 1000 sessions? I wonder who that could be.
+
+## Beyond the basics
+
+* Partitioned cookies
+* Cookie-less tracking
