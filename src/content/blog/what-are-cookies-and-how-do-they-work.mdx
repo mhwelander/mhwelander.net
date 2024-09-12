@@ -52,7 +52,7 @@ Without a cookie (or some other online identifier), a website cannot identify yo
 
 ### What is a cookie used for?
 
-Cookies by themselves <span class="highlight">**don't really do anything**</span>; the website and the browser pass them back and forth in a not-so-thrilling game of virtual table tennis. However, once a website can identify a visitor, it can use a script to **track that visitor's activity**.
+Cookies by themselves <span class="highlight">**don't really do anything**</span>; the website and the browser pass them back and forth in a not-so-thrilling game of virtual table tennis. However, once a website can identify a visitor, it can **use a script to track that visitor's activity**.
 
 <figure class="centerFig w300">
 ![](./images/2024/cookie-shutter-bug.png)
@@ -66,7 +66,7 @@ There is a difference between wearing a nametag (having a cookie), and wearing a
 <figCaption>Captured: You, eating snot</figCaption>
 </figure>
 
-A tracker can show the path you took through the website, how long you spent on each page, and maybe even which components you interacted with and how far you scrolled. Companies can use this data to **personalize your experience** and **monitor trends** - if you spent three sessions looking at 🐝beekeeping paraphenalia, the website might start to suggest that you buy the discounted Beginner Beekeper Bundle.
+A tracker can show the path you took through the website, what you clicked and downloaded, how long you spent on each page, and maybe even which components you interacted with and how far you scrolled. Companies can use this data to **personalize your experience** and **monitor trends** - if you spent three sessions looking at 🐝beekeeping paraphenalia, the website might start to suggest that you buy the discounted Beginner Beekeper Bundle.
 
 <figure class="centerFig w500">
 ![](./images/2024/cookies-drawing-6.png)
@@ -266,7 +266,7 @@ When a website owner <span class="highlight">**embeds a resource from another we
 <figCaption>A sneaky third-party cookie - where did you come from?</figCaption>
 </figure>
 
-For example, the `_ttp` cookie (TikTok) is set by loading the `events.js` script from analytics.tiktok.com (the cookie is set by the request,  _not_ the Javascript itself).
+For example, the HttpOnly `_ttp` cookie (TikTok) is set by the `Set-Cookie` header when you load `events.js` script from analytics.tiktok.com (the cookie is set by the request,  _not_ the Javascript itself).
 
 <figure class= "centerFig">
 <div   data-lightbox="true">
@@ -275,67 +275,89 @@ For example, the `_ttp` cookie (TikTok) is set by loading the `events.js` script
 <figCaption>A cookie set by the `Set-Cookie` header</figCaption>
 </figure>
 
-The `Set-Cookie` response header a third-party cookie - your browser stores it. The tracking script sends information about your activities back home to the Planet TikTok - which automatically includes your cookie in the `Cookies` request header, because it's phoning home to `tiktok.com`, where the cookie came from. Here's the critical part:
+The tracking script sends information about your activities back home to the Planet TikTok - which automatically includes your cookie in the `Cookies` request header, because it's phoning home to `tiktok.com`, where the cookie came from. Here's the critical part:
 
 > <span class="highlight">**any other website** you visit with the TikTok tracking script will see your TikTok cookie</span>
 
-This means that you can be tracked as a single individual across the **hundreds of thousands** of websites that implement this script. TikTok isn't exactly an obscure advertising platform. 
+This means that you can be **tracked as a single individual** across the **hundreds of thousands of websites** that implement this script. TikTok isn't exactly an obscure advertising platform - and neither is Google, or Amazon.
 
-<Block class="note">
-I am not picking on TikTok specifically - all advertising platforms that use third-party cookies work this way.
-</Block>
-
-And remember - _we invite these cookies_ by adding tracking scripts to our websites. We invite them, and we give them a way to phone home and gossip about us:
+And remember - _we invite these cookies_ by adding tracking scripts to our websites. We invite them, and we give them a way to phone home and gossip about us (sometimes too much, if we misconfigure the script):
 
 <figure class="centerFig w500">
 ![](./images/2024/cookie-embassy.png)
 <figCaption>This Snapchat cookie is invited</figCaption>
 </figure>
 
-And frankly, for advertising purposes - third-party cookies are great! By collecting data about an individual across many, many websites, advertising platforms are able to target ads with **incredible accuracy**. This is great for anyone who uses the platform - and great for the platform, because we pay them.
+And frankly, for advertising purposes - third-party cookies are useful! By collecting data about an individual across many, many websites, advertising platforms are able to target ads with **incredible accuracy**. This is great for anyone who uses the platform to advertise - and great for the platform, because we pay them.
 
-But it's a bit creepy. In fact, it can be outright damaging.
+But it's a bit creepy. In fact, under the right (or wrong) circumstances, it can be outright damaging.
 
-## What's the big deal with _cookies_, specifically?
+## What's the big deal?
 
-If you steal my laptop and look at my cookies, you won't get any data _out of the cookie_ - whether they are first or third-party cookie.
-<figure class="centerFig w300">
+If you steal my laptop and look at my cookies, you probably won't get a lot of interesting information out of them in isolation.
+
+<figure class="centerFig w400">
 ![](./images/2024/cookies-drawing-1.png)
 <figCaption>"Oooh, some random numbers, how SCANDALOUS"</figCaption>
 </figure>
 
-But a cookie, particularly a _third-party or cross-site cookie_, can make it **easier** to compromise your privacy online:
+But a cookie, particularly a **third-party (cross-site) cookie** that really 'gets around', can lead to your privacy being compromised. Let's say you have lived a wild, third-party cookie-accepting life online up until this point.
 
-> There is now a _lot_ of data about your activities across the internet stored by large ad platforms, and <span class="highlight">it is all linked together by a single identifier</span>
+> Many tracking services and advertising platforms have stored a _lot_ of **data** about your online activities - <span class="highlight">and it's all linked together by a **single identifier**.</span>
 
 And here's the thing about all of this data:
 
-* You don't know **exactly what data** has been collected, and **people mess up**. A misconfigured script on Mr. Bob's Nail Salon might have sent your name and email address to a third-party tracking service - it probably violates the terms of said service, but Mr. Bob made an honest mistake.
-* Data breaches happen all the time.
+* You don't know **exactly what data** has been collected
+* People **mess up**, and **data breaches happen**
 
-This might not matter to you if you're booking a nail appointment at Mr Bob's. However, it probably _does_ matter if the same tracking script later [records you downloading the patient handbook for HIV from a hospital website](https://www.theguardian.com/society/2023/may/27/nhs-data-breach-trusts-shared-patient-details-with-facebook-meta-without-consent).
+For example, a misconfigured script on 💅 Mr. Bob's Nail Salon's booking form might have sent your name and email address to an ad platform - it probably violates the terms of said platform, but Mr. Bob slapped the tracking script on his site over a boozy lunch in 2013 and hasn't thought about it since.
+
+In isolation, this might not seem like it matters. However, it probably _does_ matter if **the same tracking script, using the same cookie**, later ⚠️[records you downloading the patient handbook for a specific disease from a hospital website](https://www.theguardian.com/society/2023/may/27/nhs-data-breach-trusts-shared-patient-details-with-facebook-meta-without-consent).
+
+In this example, <span class="highlight">specifically because the cookie's **cross-site presence**</span>, a single identifier now links your name and email address to your expensive nail habit.. and ⚠️ **your private medical information** - and all of it has been sent to a third party. This may sound like a worst case scenario, but [it seems to happen all the time](https://www.npr.org/transcripts/1197960899).
+
+
+<figure class="centerFig w300">
+![](./images/2024/third-party-cookie.PNG)
+<figCaption>Et tu, cookie?</figCaption>
+</figure>
+
+<Block class="note">
+First-party still make it possible to track your activity **across sessions** on a **single website** - this could absolutely be a problem if a hospital accidentally sends some of your patient data to a tracking service.
+</Block>
+
+## Oh no! What's being done about the cookies?
+
+Data privacy issues really catapulted into the public consciousness in the mid-to-late 2010s - there's a [great timeline of data privacy online over here](https://clario.co/blog/privacy-definition-over-years/). Suffice to say, in 2024, a large percentage of people understand that **their online activities leave prints**.
+
+There is a lot of [privacy legislation](#privacy-legislation) that affect cookies, and [your browser](#browsers) is getting protective by default (which I didn't know until recently).
 
 ### Privacy legislation
 
-* Opt in to cookies (not mentioned explicitly in GDPR - says 'online identifier')
-* Rights to
+ The EU [ePrivacy Directive](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02002L0058-20091219) has been around since 2002 and explicitly mentions cookie consent, and the [GDPR](https://www.edps.europa.eu/data-protection/data-protection/legislation/history-general-data-protection-regulation_en) has applied in the European Union since 2018 and refers to [online identifiers](https://gdpr-info.eu/recitals/no-30/) (which a cookie absolutely is).
+ 
+ The ✨**general vibe**✨ of privacy legislation (at least in the EU) centers on **active consent** and **the right to be informed**. I actually started writing this blog post because I wanted to understand _exactly_ why Google Analytics requires consent, and it turns out to be quite simple:
+ 
+ > Google Analytics issues a **(first-party) cookie**, which is an online identifier that [links a natural person to a device](https://gdpr-info.eu/recitals/no-30/).
 
+And that requires consent - ergo, cookie popup required for my tiny blog.
+ 
 ### Browsers
 
-* Blocking third party cookies
-* 
+It turns out that **[Firefox](https://developer.mozilla.org/en-US/blog/goodbye-third-party-cookies/?_gl=1*1109wif*_ga*MzIzODU0NDU3LjE3MjM5MjIyNjU.*_ga_X4N05QV93S*MTcyNjE2NzIxMS4xLjEuMTcyNjE2NzI0Mi4wLjAuMA..)** and have done _many_ other things to keep users safe on the internet (no, cookies aren't the only threat to privacy). There's [a beautifully illustrated timeline here](https://clearcode.cc/blog/firefox-privacy-changes-timeline/).
 
-Some browsers block third party cookies
+**Safari** similarly [blocks third-party cookies by default](https://help.apple.com/safari/mac/8.0/en.lproj/sfri11471.html#:~:text=By%20default%2C%20Safari%20accepts%20cookies,cookies%20and%20other%20website%20data.).
 
+**Chrome** is.. [working on it, sort of](https://digiday.com/marketing/after-years-of-uncertainty-google-says-it-wont-be-deprecating-third-party-cookies-in-chrome/). It's owned by Google, who might just be making a little bit of money from online advertising. :)
 
 ## No cookies, no problems?
 
-No, not really.
+No, not really. There are many other ways to [fingerprint a person](https://seon.io/resources/dictionary/cross-browser-fingerprinting/), even across _browsers_ (seriously, check out that website, it's incredible what people have come up with). There's a reason why GDPR vaguely refers to **online identifiers**.
 
-* Cookie-less tracking just uses another identifier (albeit not cross-site) to track you - cannot track between sessions, but can track per session
-* Anonymous tracking - still see what a person did. Oh this person visited the MartinaIsCool profile 20 times in each of their 1000 sessions? I wonder who that could be.
+Third-party cookies seem like they might be doomed, and first-party cookies still require consent - something that often causes visits to drop off dramatically. Naturally, a lot of companies are asking:
 
-## Beyond the basics
+> How can I track someone's activity 'anonymously' - in a way that does not require active consent?
 
-* Partitioned cookies
-* Cookie-less tracking
+**Cookie-less tracking** offers an alternative - but you can't track visitors between websites, _or even between sessions_. Doing so would require an **identifier** that persists across sessions. Are you fingerprinting someone by generating a hash of their IP address and user agent? A cookie by any other name would smell as tasty.
+
+But that feels like an entirely separate blog post, and a whole new cast of characters.
