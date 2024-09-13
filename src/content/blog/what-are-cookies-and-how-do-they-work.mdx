@@ -2,17 +2,18 @@
 title: 'What are cookies, and how do they work?'
 description: 'An introduction to how cookies work, where they come from, and what 1st/3rd party and HTTP-Only mean.'
 pubDate: 'August 30 2024'
+heroImage: '/cookie-banner.png'
 tags: [Cookies, Data Privacy]
 showToc: true
 ---
 
 import Block from '../../components/Block.astro'
 
-I'm pretty sure I know [what **cookies** are](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies), and how they work. But I'm _also_ pretty sure I know what a **cat** looks like, and yet, drawing one without reference results in.. something less than ideal:
+I'm pretty sure I know [what **cookies** are](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies), and how they work. But I'm also pretty sure I know what a **cat** looks like, and yet, drawing one without reference is.. difficult:
 
-<figure class= "centerFig w400" data-lightbox="true">
+<figure class= "centerFig w300" data-lightbox="true">
 
-[IMAGE NEEDED]
+![A casual sketch of a cat head. It's winking and there's a pink heart above its head.](./images/2024/cat.png)
 
 <figCaption>... meow, I guess?</figCaption>
 </figure>
@@ -30,21 +31,21 @@ This blog post is about how cookies work - specifically _cookies_, and specifica
 A cookie is a **piece of text** sent by a website to your browser that **uniquely identifies you** to that website. They have (at minimum) a name (`X`), a weird-looking value (`902A4Y`), and a domain (`mhwelander.net`):
 
 <figure class="centerFig w300">
-![](./images/2024/cookies-drawing-1.png)
+![A black-and-white digital drawing of a cookie character with arms and legs that is waving at you. It is wearing a sash with a domain name, a cookie name, and a random string of numbers and letters.](./images/2024/cookies-drawing-1.png)
 <figCaption>"Hi, I'm your cookie"</figCaption>
 </figure>
 
 Your browser **stores the cookie** in a backpack of cookies, and includes it in subsequent requests to that website _or_ that website's resources (images, scripts) [for as long as that cookie lasts](#how-long-does-a-cookie-last):
 
 <figure class="centerFig w600">
-![](./images/2024/cookie-drawing-3.png)
+![A cartoon showing communication between server and browser. Panel 1: A web browser character wearing a hat and a backpack is waving up at a website, represented by a server on a cloud. The browser says "Hi, website!" and the server responds "Hi, stranger!". Panel 2: The same website character is dropping a pile of documents and a cookie with a parachute down to the browser, while saying: "Here is my content - and a cookie!"](./images/2024/cookie-drawing-3.png)
 <figCaption>A website recognizing an old friend</figCaption>
 </figure>
 
 Including relevant cookies in requests is just **something that a browser does**. If it sees that there's a cookie from `mhwelander.net` in your backpack, it will include that cookie in <span class="highlight">**all and any requests**</span> to `mhwelander.net` URLs. The website now has a  mechanism by which to identify you between page requests and (depending on the type of cookie) between browsing sessions:
 
 <figure class="centerFig w400">
-![](./images/2024/cookie-drawing-4.png)
+![A single panel cartoon showing communication between server and browser. A web browser character wearing a hat and a backpack is passing a cookie up to a website character, represented by a server on a cloud. The server character says: "Oh hey, I know you! Want a new page?](./images/2024/cookie-drawing-4.png)
 <figCaption>A website recognizing an old friend</figCaption>
 </figure>
 
@@ -55,21 +56,21 @@ Without a cookie (or some other online identifier), a website cannot identify yo
 Cookies by themselves <span class="highlight">**don't really do anything**</span>; the website and the browser pass them back and forth in a not-so-thrilling game of virtual table tennis. However, once a website can identify a visitor, it can **use a script to track that visitor's activity**.
 
 <figure class="centerFig w300">
-![](./images/2024/cookie-shutter-bug.png)
+![An illustration of a character shaped like a single page document with a &lt;/&gt; symbol to indicate that it is a script. It has arms and legs, and is clutching a camera to its chest to indicate that it is a tracking script. It looks shy.](./images/2024/cookie-shutter-bug.png)
 <figCaption>A lil' tracking script, ready to capture the action</figCaption>
 </figure>
 
 There is a difference between wearing a nametag (having a cookie), and wearing a nametag whilst someone observes and records that you eat boogers (read a blog post about cookies).
 
 <figure class="centerFig w600">
-![](./images/2024/cookie-snot.png)
+![An illustration of a browser character wearing a hat and holding a cookie, and licking at some green snot coming out of its own nose. Above, a website character reprsented by a server in a cloud with a grossed-out expression says ".. I guess I'll store that?". Meanwhile, a character shaped like a document and holding a camera peeks out from behind the website character and snaps a photo with a *click!*](./images/2024/cookie-snot.png)
 <figCaption>Captured: You, eating snot</figCaption>
 </figure>
 
 A tracker can show the path you took through the website, what you clicked and downloaded, how long you spent on each page, and maybe even which components you interacted with and how far you scrolled. Companies can use this data to **personalize your experience** and **monitor trends** - if you spent three sessions looking at 🐝beekeeping paraphenalia, the website might start to suggest that you buy the discounted Beginner Beekeper Bundle.
 
 <figure class="centerFig w500">
-![](./images/2024/cookies-drawing-6.png)
+![An illustration showing 8 black dots labelled 'Page', connected by arrows to form a path. Each page has a cookie icon to show that a cookie was present when the page was viewed. Some pages are tagged with additional actions like '+search' or '+clicked'. In the background, smaller, unlabelled dots in grey indicate other paths.](./images/2024/cookies-drawing-6.png)
 <figCaption>A path through the content</figCaption>
 </figure>
 
@@ -91,7 +92,7 @@ In a browser, however, a **persistent cookie** lasts until you delete manually i
 By contrast, a true **session cookie** (a cookie issued without an expiration date) lasts until you close the browser.
 
 <figure class="centerFig w400">
-![](./images/2024/cookies-drawing-5.png)
+![An illustration of a cookie character. He has a big white beard and a walking stick, and looks a bit tired.](./images/2024/cookies-drawing-5.png)
 <figCaption>A well-aged cookie</figCaption>
 </figure>
 
@@ -115,7 +116,7 @@ Cookies used for marketing purposes such as tracking and analytics are considere
 When you request a web page - let's say, `mhwelander.net` - that web page sends you a **response** (usually some HTML). That response triggers a **_cascade_ of responses** to get any referenced stylesheets, scripts, images, and fonts required. You might also receive some 🍪**cookies**:
 
 <figure class="centerFig w500">
-![](./images/2024/responses.png)
+![An illustration of a browser character wearing a hat and a backpack. The badges on the straps say 'Cool Browser Club' and 'I love HTTP'. The browser is looking down at a collection of resources consisting of a page, a PNG (reprsented by a polaroid icon), a Javascript file (represented by a curled page icon), a .woff file (represented by the letters Aa), and a .css file (represented by a paintbrush with rainbow paint). There is an arrow going from browser to document that includes a cookie. The arrow cascades down to the other resources. Finally, there are arrows going back to the browser character, who looks a bit shocked.](./images/2024/responses.png)
 <figCaption>Responses</figCaption>
 </figure>
 
@@ -123,9 +124,9 @@ You can see the responses in [Chrome Developer Tools](https://developer.chrome.c
 
 <figure class="centerFig">
 <div  data-lightbox="true">
-![](./images/2024/network-request.png)
+![A screenshot of Google Chrome Dev Tools, showing the Network tab.](./images/2024/network-request.png)
 </div>
-<figCaption>The network app</figCaption>
+<figCaption>The network tab</figCaption>
 </figure>
 
 ### I was promised cookies - where are they?
@@ -134,7 +135,7 @@ Cookies are not separate requests - they are set by the `Set-Cookie` header of a
 
 <figure class="centerFig">
 <div  data-lightbox="true">
-![](./images/2024/application-cookies.png)
+![A screenshot of Google Chrome Dev Tools, showing the Application tab and the Cookies section.](./images/2024/application-cookies.png)
 </div>
 
 <figCaption>Cookies sent by mhwelander.net</figCaption>
@@ -144,7 +145,7 @@ If a website contains **iframes**, cookies are organised by which 'frame' (inclu
 
 <figure class="centerFig w400">
 <div  data-lightbox="true">
-![](./images/2024/iframe-cookies.png)
+![A screenshot of Google Chrome Dev Tools, showing the Cookies section in the Application tab. There is a list of 'frames', including ct.pinterest.com and td.doubleclick.net - some entries are blacked out](./images/2024/iframe-cookies.png)
 </div>
 
 <figCaption>Cookies used by iframes</figCaption>
@@ -167,7 +168,7 @@ All requests and responses includes **headers**. [Headers](https://developer.moz
 
 <figure class="centerFig">
 <div   data-lightbox="true">
-![alt text](./images/2024/request-response.png)
+![A screenshot of Google Chrome Dev Tools, showing a specific resource open in the Network tab. The request and response headers are highlighted in red.](./images/2024/request-response.png)
 </div>
 <figCaption>HTTP-only cookies</figCaption>
 </figure>
@@ -176,7 +177,7 @@ A response can also **set a cookie** via the [`Set-Cookie` header](https://devel
 
 <figure class="centerFig">
 <div   data-lightbox="true">
-![alt text](./images/2024/cookie-header.png)
+![A screenshot of Google Chrome Dev Tools, showing a specific resource open in the Network tab. The response includes several Set-Cookie headers.](./images/2024/cookie-header.png)
 </div>
 <figCaption>HTTP-only cookies</figCaption>
 </figure>
@@ -185,7 +186,7 @@ These cookies show up under **Application > Cookies**:
 
 <figure class= "centerFig">
 <div   data-lightbox="true">
-![alt text](./images/2024/set-cookies.png)
+![A screenshot of Google Chrome Dev Tools, showing the Application tab > Cookies section. da.wikipedia.com is selected, and there is a list of cookies belonging to that website in the right-hand panel.](./images/2024/set-cookies.png)
 </div>
 <figCaption>HTTP-only cookies</figCaption>
 </figure>
@@ -204,7 +205,7 @@ You can paste this one line into the **Console** tab and press enter to create a
 
 <figure class= "centerFig">
 <div   data-lightbox="true">
-![alt text](./images/2024/set-cookies-js.png)
+![A screenshot of Google Chrome Dev Tools, showing the Application tab > Cookies section. The list of cookies includes the 'martina' cookie with the value 'a cookie value'.](./images/2024/set-cookies-js.png)
 </div>
 <figCaption>I'm a real cookie</figCaption>
 </figure>
@@ -226,9 +227,9 @@ Even the Google Analytics script creates a first-party cookie - the domain is mh
 
 <figure class= "centerFig">
 <div   data-lightbox="true">
-![alt text](./images/2024/cookie-domains.png)
+![A screenshot of Google Chrome Dev Tools, showing the Application tab > Cookies section. There are two _ga cookies listed, both of which have mhwelander.net in their domain.](./images/2024/cookie-domains.png)
 </div>
-<figCaption>I'm a real cookie</figCaption>
+<figCaption>Google Analytics cookies</figCaption>
 </figure>
 
 ### HTTPOnly cookies
@@ -240,7 +241,7 @@ Cookies set by the `Set-Cookies` reponse header _can be_ [set to HttpOnly](https
 On many websites, particularly after you accept non-essential cookies, you will suddenly see cookies from a list of _other_ domains - often domains you do not recognize or have never visited.  These are **third party or 'cross-site' cookies**.
 
 <figure class="centerFig w400">
-![](./images/2024/third-party-cookie.PNG)
+![A cartoon of a cookie character with its arms at is side. It is wearing a black mask over its face to indicate that it is trying to hide its identity.](./images/2024/third-party-cookie.png)
 <figCaption>A sneaky third-party cookie - where did you come from?</figCaption>
 </figure>
 
@@ -250,7 +251,7 @@ I visited ███████.com, accepted all cookies, and looked in the App
 
 <figure class= "centerFig">
 <div   data-lightbox="true">
-![alt text](./images/2024/third-party-list.png)
+![A screenshot of Google Chrome Dev Tools, showing the Application tab > Cookies section. There is a long list of cookies from various sites, including .snapchat.com.](./images/2024/third-party-list.png)
 </div>
 <figCaption>Third party cookies on ███████.com</figCaption>
 </figure>
@@ -262,15 +263,15 @@ It is the **context in which a cookie appears** that makes it third-party or fir
 When a website owner <span class="highlight">**embeds a resource from another website**</span>, such as an image or a script, the **response** from that resource can include a `Set-Cookie` header. This sets a **third-party cookie** - it comes from a website you might never have visited.
 
 <figure class="centerFig w400">
-![](./images/2024/third-party-cookies.PNG)
+![A cartoon of a browser character wearing a hat and a backpack. Below it are three different resources - one is a script (represented by a document), and the other two are a script and an image (represented by a polaroid) that are wearing black masks to indicate that they are third-party. The browser is looking at the masked characters suspiciously.](./images/2024/third-party-cookies.png)
 <figCaption>A sneaky third-party cookie - where did you come from?</figCaption>
 </figure>
 
 For example, the HttpOnly `_ttp` cookie (TikTok) is set by the `Set-Cookie` header when you load `events.js` script from analytics.tiktok.com (the cookie is set by the request,  _not_ the Javascript itself).
 
 <figure class= "centerFig">
-<div   data-lightbox="true">
-![alt text](./images/2024/using-the-cookie-1.png)
+<div  data-lightbox="true">
+![A screenshot of Google Chrome Dev Tools, showing the Network tab with event.js selected. In the right-hand panel, you can see that a Set-Cookie hader sets the _ttp cookie.](./images/2024/using-the-cookie-1.png)
 </div>
 <figCaption>A cookie set by the `Set-Cookie` header</figCaption>
 </figure>
@@ -284,7 +285,7 @@ This means that you can be **tracked as a single individual** across the **hundr
 And remember - _we invite these cookies_ by adding tracking scripts to our websites. We invite them, and we give them a way to phone home and gossip about us (sometimes too much, if we misconfigure the script):
 
 <figure class="centerFig w500">
-![](./images/2024/cookie-embassy.png)
+![An illustration of a small flat island. The island has a face, and is smiling up at a cookie character dancing on its surface. The cookie is holding a flag with Snapchat's colors, which match the small high-rise building with the Snapchat logo also situated on the island.](./images/2024/cookie-embassy.png)
 <figCaption>This Snapchat cookie is invited</figCaption>
 </figure>
 
@@ -297,7 +298,7 @@ But it's a bit creepy. In fact, under the right (or wrong) circumstances, it can
 If you steal my laptop and look at my cookies, you probably won't get a lot of interesting information out of them in isolation.
 
 <figure class="centerFig w400">
-![](./images/2024/cookies-drawing-1.png)
+![A black-and-white digital drawing of a cookie character with arms and legs that is waving at you. It is wearing a sash with a domain name, a cookie name, and a random string of numbers and letters.](./images/2024/cookies-drawing-1.png)
 <figCaption>"Oooh, some random numbers, how SCANDALOUS"</figCaption>
 </figure>
 
@@ -316,9 +317,8 @@ In isolation, this might not seem like it matters. However, it probably _does_ m
 
 In this example, <span class="highlight">specifically because the cookie's **cross-site presence**</span>, a single identifier now links your name and email address to your expensive nail habit.. and ⚠️ **your private medical information** - and all of it has been sent to a third party. This may sound like a worst case scenario, but [it seems to happen all the time](https://www.npr.org/transcripts/1197960899).
 
-
 <figure class="centerFig w300">
-![](./images/2024/third-party-cookie.PNG)
+![A black-and-white digital drawing of a third-party tcookie character with arms and legs. It is wearing a sash with a domain name, a cookie name, and a random string of numbers and letters. It is also wearing a black mask over its eyes.](./images/2024/third-party-cookie.png)
 <figCaption>Et tu, cookie?</figCaption>
 </figure>
 
@@ -354,10 +354,15 @@ It turns out that **[Firefox](https://developer.mozilla.org/en-US/blog/goodbye-t
 
 No, not really. There are many other ways to [fingerprint a person](https://seon.io/resources/dictionary/cross-browser-fingerprinting/), even across _browsers_ (seriously, check out that website, it's incredible what people have come up with). There's a reason why GDPR vaguely refers to **online identifiers**.
 
-Third-party cookies seem like they might be doomed, and first-party cookies still require consent - something that often causes visits to drop off dramatically. Naturally, a lot of companies are asking:
+Third-party cookies seem like they might be doomed, and first-party cookies still require consent - something that often causes **a dramatic drop-off in recorded website traffic**. Naturally, a lot of companies are asking:
 
 > How can I track someone's activity 'anonymously' - in a way that does not require active consent?
 
-**Cookie-less tracking** offers an alternative - but you can't track visitors between websites, _or even between sessions_. Doing so would require an **identifier** that persists across sessions. Are you fingerprinting someone by generating a hash of their IP address and user agent? A cookie by any other name would smell as tasty.
+**Cookie-less tracking** offers an alternative - but you can't track visitors between websites, _or even between sessions_. Doing so would require an **identifier** that persists (or can be reliably re-created) across sessions. Are you fingerprinting someone by generating a hash of their IP address and user agent? The same, repeatable inputs every time? Smells like a cookie in a Halloween costume to me.
+
+<figure class="centerFig w300">
+![An illustration of a character wearing a white sheet with holes cut out. From the shape of the sheet, you can tell that it's a cookie character in disguise.](./images/2024/ghost-cookie.png)
+<figCaption>OoOoOoooooo!</figCaption>
+</figure>
 
 But that feels like an entirely separate blog post, and a whole new cast of characters.
