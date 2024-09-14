@@ -45,7 +45,7 @@ const result = groupedByYear.sort((a, b) => b.year - a.year);
 			}
 
 			ul li {
-				margin: 0 0 1.5em 0;
+				margin: 0 0 2em 0;
 			}
 
 			ul li * {
@@ -74,21 +74,26 @@ const result = groupedByYear.sort((a, b) => b.year - a.year);
 			}
 
 			.blogList {
-				border-top: 1px solid lightgray;
+				border-top: 1px solid rgb(var(--gray-light));
 				margin: 2em 0 0 0;
 				padding: 2em 0 0 0;
 			}
+
 			.date {
 				margin: 0;
 				color: rgb(var(--gray));
 			}
 			ul li a:hover h3,
-			ul li a:hover .date {
+			ul li a:hover .date,
+			ul li a:hover .tag {
 				color: rgb(var(--accent));
 			}
 			ul a:hover img {
 				box-shadow: var(--box-shadow);
 			}
+
+			.tag { background: none; color: var(--pink); padding: 0 0.5em; margin: 0}
+
 
 			@media (max-width: 720px) {
 				ul {
@@ -121,6 +126,10 @@ const result = groupedByYear.sort((a, b) => b.year - a.year);
 							<li>
 								<a href={`/blog/${post.slug}/`}>
 									<h3 class="title">{post.data.title}</h3>
+
+                                    { post.data.description != '' && (
+                                    <p class="date">{post.data.description}</p>
+                                )}
 									<p class="date">
 										<FormattedDate date={post.data.pubDate} />
 

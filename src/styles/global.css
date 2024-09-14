@@ -5,9 +5,11 @@
  */
 
  @import url('https://fonts.googleapis.com/css2?family=Share+Tech&display=swap');
+ @import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap'); 
 
 :root {
-	--link: #65a4da;
+	--link: #38b6f1;
+	--green: #4c8077;
 	--accent: 210, 211, 218;
 	--accent-dark: #000d8a;
 	--black: 15, 18, 25;
@@ -17,7 +19,7 @@
 	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
 	--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
 		0 16px 32px rgba(var(--gray), 33%);
-	--pink: #da65a4;
+	--pink: #ff819d;
 }
 
 @font-face {
@@ -44,7 +46,7 @@ body {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: rgb(var(--gray-dark));
-	font-size: 16px;
+	font-size: 17px;
 	line-height: 1.7;
 }
 main {
@@ -54,7 +56,7 @@ main {
 	padding: 2em 1em;
 }
 
-main h2 {
+main h2::first-letter {
 	/* border-left: 5px solid var(--pink); 
 	padding-left: 0.5em;*/
 }
@@ -73,15 +75,16 @@ h1 {
 	margin: 0 0 0.3em;
 }
 h2 {
-	font-size: 2.1em;
+	font-size: 2.6em;
 }
 
 h3 {
-	font-size: 1.5em;
+	font-size: 2.0em;
 	font-weight: 200;
 }
 h4 {
-	font-size: 1.563em;
+	font-size: 1.463em;
+    font-style: italic;
 }
 h5 {
 	font-size: 1.25em;
@@ -100,10 +103,16 @@ p {
 	margin-bottom: 1em;
 }
 
+.prose li::marker {
+	color: var(--pink);
+	content: "●  ";
+  }
+
 textarea {
 	width: 100%;
 	font-size: 16px;
 }
+
 input {
 	font-size: 16px;
 }
@@ -112,8 +121,8 @@ table {
 }
 img {
 	max-width: 100%;
-	height: auto;
 	border-radius: 8px;
+	height: auto;
 	margin: 0 auto;
 }
 code {
@@ -128,6 +137,15 @@ pre {
 pre > code {
 	all: unset;
 }
+
+span.highlight {
+	background: linear-gradient(104deg, rgba(255, 130, 203, 0) 0.9%, rgba(247, 255, 130, 1.25) 2.4%, rgba(251, 255, 130, 0.788) 5.8%, rgba(247, 255, 130, 0.1) 93%, rgba(247, 255, 130, 0.7) 96%, rgba(247, 255, 1302, 0) 98%), linear-gradient(183deg, rgba(247, 255, 130, 0) 0%, rgba(247, 255, 130, 0.3) 7.9%, rgba(247, 255, 130, 0) 15%);
+	padding: 0.2em 5px;
+	-webkit-box-decoration-break: clone;
+	border-radius: 7.5px;
+	text-shadow: -12px 12px 9.8px rgba(247, 255, 130, 0.7), 21px -18.1px 7.3px rgba(255, 255, 255, 1), -18.1px -27.3px 30px rgba(255, 255, 255, 1);
+}
+
 blockquote {
 	border-left: 4px solid var(--accent);
 	padding: 0 0 0 20px;
@@ -144,9 +162,34 @@ hr {
 }
 
 .centerFig {
-	margin: 0 auto 2em auto;
+	margin: 1.5em auto 2em auto;
 	width: 90%;
 	text-align:center;
+}
+
+.centerFig.w100 img {	
+	max-width: 100px;
+}
+
+.centerFig.w200 img {	
+	max-width: 200px;
+}
+
+.centerFig.w300 img {	
+	max-width: 300px;
+}
+
+
+.centerFig.w400 img {	
+	max-width: 400px;
+}
+
+.centerFig.w500 img {	
+	max-width: 500px;
+}
+
+.centerFig.w600 img {	
+	max-width: 600px;
 }
 
 .centerFig p {
@@ -170,10 +213,10 @@ hr {
 }
 
 .tag { 
-	background: rgb(var(--gray));
+	background: var(--link);
 	color: white;
 	border-radius: 10px;
-	padding: 1px 10px;
+	padding: 4px 10px;
 	font-size: 0.8em;
 	margin: 0 3px;
 }
@@ -209,6 +252,18 @@ hr {
 	font-size: 1.3em;
 	font-weight: 300;
 	padding: 1.5em 0 0 0;
+}
+
+footer p.cursive {
+	font-family: "Caveat Brush", cursive;
+	font-size: 2.5em;
+	margin: 0 0 0.2em 0;
+	padding: 0;
+}
+
+footer p.cursive span {
+	color: var(--link);
+    text-shadow: #000 0px 0 1px;
 }
 
 .toc {
@@ -248,14 +303,14 @@ table {
   table {
 	color: #333;
 	background: white;
-	border: 1px solid grey;
+	border: 1px solid var(--link);
 	font-size: 12pt;
 	border-collapse: collapse;
   }
   table thead th,
   table tfoot th {
-	color: #777;
-	background: rgba(0,0,0,.1);
+	color: #fff;
+	background: var(--link);
   }
   table caption {
 	padding:.5em;
@@ -263,7 +318,7 @@ table {
   table th,
   table td {
 	padding: .5em;
-	border: 1px solid lightgrey;
+	border: 1px solid var(--link);
   }
   /* Zebra Table Style */
   [data-table-theme*=zebra] tbody tr:nth-of-type(odd) {

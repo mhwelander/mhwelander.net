@@ -4,6 +4,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import Lightbox from '@julian_cataldo/astro-lightbox/LightBox.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
@@ -12,7 +13,9 @@ const { title, description, pubDate, updatedDate, tags, heroImage } = Astro.prop
 
 <html lang="en">
 	<head>
-		<BaseHead title={title} description={description} />
+
+		<BaseHead title={title} description={description} image={heroImage}
+		 />
 		<style>
 
 			.hero-image {
@@ -20,9 +23,8 @@ const { title, description, pubDate, updatedDate, tags, heroImage } = Astro.prop
 			}
 			.hero-image img {
 				display: block;
-				margin: 0 auto;
+				margin: 0 auto 1em auto;
 				border-radius: 12px;
-				box-shadow: var(--box-shadow);
 			}
 			.prose {	
 				margin: auto;
@@ -33,7 +35,7 @@ const { title, description, pubDate, updatedDate, tags, heroImage } = Astro.prop
 				padding: 0 0 2em 0;
 				text-align: center;
 				line-height: 1;
-				border-bottom:1px solid lightgrey;
+				border-bottom: 1px solid rgb(var(--gray-light));
 			}
 			.title h1 {
 				margin: 0 0 0.3em 0;
@@ -47,6 +49,8 @@ const { title, description, pubDate, updatedDate, tags, heroImage } = Astro.prop
 			}
 
 		</style>
+
+	<Lightbox />
 	</head>
 
 	<body>
