@@ -162,7 +162,7 @@ If a website contains **iframes**, cookies are organized by which 'frame' (inclu
 
 An iframe is a reference to a third-party resource - just like an image or a script - and [can set cookies](https://prototyp.digital/blog/how-to-set-cookies-from-an-embedded-iframe-2) if the parent frame allows it.
 
-## Setting cookies
+### Setting cookies
 
 Cookies can come from two places:
 
@@ -171,7 +171,7 @@ Cookies can come from two places:
 
 A response header can do certain things that Javascript cannot - such as creating a third-party cookie, or marking a cookie as HttpOnly. Javascript _code_ also cannot access cookies from another domain than the one you are currently on.
 
-### Setting cookies with a HTTP response header
+#### Setting cookies with a HTTP response header
 
 All requests and responses includes **headers**. [Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers) are **meta data** about the request - for example, the `Content-Type` header describes kind of content that was requested. The following request returns an `image/webp`:
 
@@ -202,11 +202,7 @@ These cookies show up under **Application > Cookies**:
 
 In this particular example, all cookies are **first-party** - they come from `wikipedia.com`. However, the `Set-Cookie` header can also be used to set a **third-party cookie**.
 
-#### HTTPOnly cookies
-
-Cookies set by the `Set-Cookies` response header _can be_ [set to HttpOnly](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#httponly). This means that a cookie **can only be accessed by the server** (included in the `Cookies` request header), _not_ by Javascript. Requests initiated _by_ Javascript will still include this cookie, but the script itself cannot access it.
-
-### Setting cookies with Javascript
+#### Setting cookies with Javascript
 
 Javascript can also set cookies - this example sets a cookie named `martina` that expires in 2030 (in reality, browsers have a max age for cookies):
 
@@ -244,6 +240,10 @@ Even the Google Analytics script creates a first-party cookie - the domain is mh
 </div>
 <figCaption>Google Analytics cookies</figCaption>
 </figure>
+
+#### HTTPOnly cookies
+
+Cookies set by the `Set-Cookies` response header _can be_ [set to HttpOnly](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#httponly). This means that a cookie **can only be accessed by the server** (included in the `Cookies` request header), _not_ by Javascript. Requests initiated _by_ Javascript will still include this cookie, but the script itself cannot access it.
 
 ### Accessing cookies
 
