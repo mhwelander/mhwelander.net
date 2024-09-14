@@ -356,7 +356,15 @@ table {
 
 	.tag { 
 		font-size: 0.9em;
+
 	}
+
+	.centerFig.w300 img,
+	.centerFig.w600 img,
+	.centerFig.w500 img,
+	.centerFig.w400 img {	
+		max-width: 100%;
+	}	
 }
 
 @media (max-width: 480px) {
