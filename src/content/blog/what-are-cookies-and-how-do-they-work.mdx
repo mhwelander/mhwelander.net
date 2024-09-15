@@ -20,8 +20,8 @@ I'm pretty sure I know [what **cookies** are](https://developer.mozilla.org/en-U
 
 So when I added Google Analytics to my website, I did some research. This post is for anyone with passing knowledge of cookies who really wants to get into the crumbs.
 
-<Block class="note">
-This blog post is about how cookies work - specifically _cookies_, and specifically how they _work_. It is **not legal advice**, nor does it cover other means of tracking and/or identifying users online in any detail.
+<Block class="warning">
+This blog post contains some references to and thoughts about privacy legislation, but it is **not legal advice**.
 </Block>
 
 <!-- toc -->
@@ -396,9 +396,9 @@ There is a lot of **[privacy legislation](#privacy-legislation)** that affect co
 
 ### Privacy legislation
 
-The ✨**general vibe**✨ of privacy legislation (at least in the EU) centers on **active consent** and **the right to be informed**.
+The ✨**general vibe**✨ of privacy legislation centers on **active consent** and **the right to be informed** (in the European Union - and many [other countries and/or states have GDPR-like legislation](https://insights.comforte.com/countries-with-gdpr-like-data-privacy-laws).)
 
-The EU [ePrivacy Directive](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32009L0136) has been around since 2002 and mentions requiring consent to store information (such as cookies) on user equipment. [GDPR](https://www.edps.europa.eu/data-protection/data-protection/legislation/history-general-data-protection-regulation_en) has applied in the European Union since 2018, and requires [consent](https://gdpr-info.eu/art-6-gdpr/) (with some caveats) to process personal data - which includes [online identifiers](https://gdpr-info.eu/recitals/no-30/).
+The EU [ePrivacy Directive](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32009L0136) has been around since 2002 and mentions requiring consent to store information (such as cookies) on user equipment. [GDPR](https://www.edps.europa.eu/data-protection/data-protection/legislation/history-general-data-protection-regulation_en) has applied in the European Union since 2018, and requires [consent](https://gdpr-info.eu/art-6-gdpr/) (with some caveats) to process personal data - which includes [online identifiers](https://gdpr-info.eu/recitals/no-30/). 
 
 I actually started writing this blog post because I wanted to understand _exactly_ why Google Analytics requires consent, and here it is: it issues a cookie (ePrivacy Directive), and that's an online identifier that is being processed and stored by Google (GDPR).
 
@@ -422,7 +422,7 @@ Third-party cookies seem like they might be doomed, and first-party cookies stil
 
 > How can I track someone's activity 'anonymously' - in a way that does not require active consent?
 
-**Cookie-less tracking** offers an alternative - but you can't track visitors between websites, _or even between sessions_. As soon as your tracker uses an **identifier that persists or can be reliably re-created** across sessions, I would argue that it's processing personal data, and personal data requires consent.   
+**Cookie-less tracking** offers an alternative - but you can't track visitors between websites, _or even between sessions_. As soon as your tracker uses an **identifier that persists or can be reliably re-created** across sessions, I would argue that it's processing personal data, and personal data requires consent.
 
 For example (opinion ahead) - if you fingerprint someone by generating _and storing_ a hash of their IP address, user agent, and some other browser information that makes that hash more reliably unique, _without_ using so much as a sprinkle of some kind of time-limited salt.. that's starting to smell like a cookie in a Halloween costume to me.
 
