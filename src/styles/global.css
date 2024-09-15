@@ -116,9 +116,10 @@ textarea {
 input {
 	font-size: 16px;
 }
+
 table {
-	width: 100%;
 }
+
 img {
 	max-width: 100%;
 	border-radius: 8px;
@@ -314,6 +315,7 @@ table {
   }
   table caption {
 	padding:.5em;
+	text-align: left;
   }
   table th,
   table td {
@@ -354,6 +356,20 @@ table {
 		padding: 1.5em 0.5em;
 	}
 
+	[role="region"][aria-labelledby][tabindex] {
+		overflow: auto;
+	  }
+	  
+	  [role="region"][aria-labelledby][tabindex]:focus {
+		outline: .1em solid rgba(0,0,0,.1);
+	  }	
+
+	  footer p.cursive {
+		font-size: 2em;
+		line-height: 2em;
+	}
+	
+
 	.toc {
 		background: rgb(var(--gray-light), 50%);
 		width: calc(100% - 1em);
@@ -373,6 +389,10 @@ table {
 	.tag { 
 		font-size: 0.9em;
 
+	}
+
+	.centerFig {
+		margin: 0;
 	}
 
 	.centerFig.w300 img,

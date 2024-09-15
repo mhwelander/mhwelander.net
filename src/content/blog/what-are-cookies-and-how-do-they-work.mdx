@@ -257,12 +257,13 @@ If a cookie is from another domain, it will be included in `Cookies` header of a
 
 But this is **how many tracking script work** - they track what you do on site A and send a request back home to Site B with your cookie in the `Cookies` request header, like a stamp on an envelope.
 
-<table>
+<div role="region" aria-labelledby="Caption01" tabindex="0">
+<table style="min-width: 800px">
     <caption>Ways to access a cookie</caption>
     <thead>
         <tr>
             <th>Current domain</th>
-            <th>HttpOnly cookie</th>
+            <th>HttpOnly</th>
             <th>Access</th>
         </tr>
     </thead>
@@ -291,6 +292,7 @@ But this is **how many tracking script work** - they track what you do on site A
         </tr>
     </tbody>
 </table>
+</div>
 
 ## Third-party cookies
 
@@ -420,7 +422,7 @@ Third-party cookies seem like they might be doomed, and first-party cookies stil
 
 > How can I track someone's activity 'anonymously' - in a way that does not require active consent?
 
-**Cookie-less tracking** offers an alternative - but you can't track visitors between websites, _or even between sessions_. As soon as your tracker uses an **identifier that persists or can be reliably re-created** across sessions, I would argue that it's processing personal data, and personal data requires consent.
+**Cookie-less tracking** offers an alternative - but you can't track visitors between websites, _or even between sessions_. As soon as your tracker uses an **identifier that persists or can be reliably re-created** across sessions, I would argue that it's processing personal data, and personal data requires consent.   
 
 For example (opinion ahead) - if you fingerprint someone by generating _and storing_ a hash of their IP address, user agent, and some other browser information that makes that hash more reliably unique, _without_ using so much as a sprinkle of some kind of time-limited salt.. that's starting to smell like a cookie in a Halloween costume to me.
 
