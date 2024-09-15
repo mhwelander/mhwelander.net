@@ -393,6 +393,7 @@ table {
 
 	.centerFig {
 		margin: 0;
+		width: 100%;
 	}
 
 	.centerFig.w300 img,
