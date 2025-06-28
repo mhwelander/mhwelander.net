@@ -2,27 +2,9 @@
 const today = new Date();
 ---
 
-<script is:inline>
-	window.CustomSubstackWidget = {
-	  substackUrl: "mhwelander.substack.com",
-	  placeholder: "example@gmail.com",
-	  buttonText: "Subscribe",
-	  theme: "custom",
-	  colors: {
-		primary: "#FFFFFF",
-		input: "#FFFFFF33",
-		email: "#FFFFFF",
-		text: "rgba(255, 129, 157, 1)",
-	  },
-  
-	  // Go to substackapi.com to unlock custom redirect
-  
-	};
-  </script>
-  <script is:inline src="https://substackapi.com/widget.js" async></script>
 
 <footer>
-    <p class="cursive">Follow me, or sign up for monthly musings</p>
+    <p class="cursive" style="display:none;">Follow me, or sign up for monthly musings</p>
 	<div class="footerInner">
 
 	<div class="social-links item">
@@ -41,12 +23,6 @@ const today = new Date();
 
 	</div>
 
-	<div class="newsletter item">
-		<div id="custom-substack-embed"></div>
-
-
-
-	</div>
 </div>
 
 	<p>&copy; {today.getFullYear()} Martina Welander. All rights reserved. <br /><a href="#" data-cc="show-preferencesModal">Manage cookie preferences</a></p>
